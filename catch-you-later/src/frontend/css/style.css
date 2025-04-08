@@ -94,3 +94,38 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.regulation-card {
+  background-color: #f9f9f9;
+  border: 2px solid black;
+  border-radius: 10px;
+  padding: 1rem;
+  margin: 1rem auto;
+  max-width: 800px;
+  display: flex;
+  justify-content: space-between;
+  color: #111;
+}
+
+.regulation-card > div {
+  flex: 1;
+  text-align: center;
+}
+
+.label {
+  font-weight: bold;
+  font-style: italic;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.regulation-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  text-align: center;
+}
+
+.regulation-grid strong {
+  font-style: italic;
+}
