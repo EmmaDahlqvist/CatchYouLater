@@ -1,0 +1,230 @@
+[
+    {
+        "Species": "Europeiskt ostron",
+        "MinSize": "6 cm",
+        "MaxSize": null,
+        "Area": "Samtliga havsområden"
+    },
+    {
+        "Species": "Stillahavsostron",
+        "MinSize": "Inget minimimått",
+        "MaxSize": null,
+        "Area": "Samtliga havsområden"
+    },
+    {
+        "Species": "Hummer",
+        "MinSize": "9 cm carapaxlängd",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt, Östersjön delområde 23"
+    },
+    {
+        "Species": "Havskräfta",
+        "MinSize": "3,2 cm carapaxlängd; 10,5 cm totallängd",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt"
+    },
+    {
+        "Species": "Lax",
+        "MinSize": "45 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt utom Svinesund och Idefjorden"
+    },
+    {
+        "Species": "Lax",
+        "MinSize": "50 cm",
+        "MaxSize": null,
+        "Area": "Svinesund och Idefjorden"
+    },
+    {
+        "Species": "Lax",
+        "MinSize": "60 cm",
+        "MaxSize": null,
+        "Area": "Östersjöns samtliga delområden"
+    },
+    {
+        "Species": "Öring",
+        "MinSize": "45 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt utom Svinesund och Idefjorden"
+    },
+    {
+        "Species": "Öring",
+        "MinSize": "40 cm",
+        "MaxSize": null,
+        "Area": "Svinesund och Idefjorden"
+    },
+    {
+        "Species": "Öring",
+        "MinSize": "50 cm",
+        "MaxSize": null,
+        "Area": "Östersjöns samtliga delområden"
+    },
+    {
+        "Species": "Harr",
+        "MinSize": "30 cm",
+        "MaxSize": null,
+        "Area": "Östersjön delområde 29 norr om lat. 60 00 N, 30-31"
+    },
+    {
+        "Species": "Gädda",
+        "MinSize": "40 cm",
+        "MaxSize": null,
+        "Area": "Östersjöns delområden söder om gränsen mellan Västernorrlands och Västerbottens län för alla redskap utom handredskap och ryssjor"
+    },
+    {
+        "Species": "Gädda",
+        "MinSize": "40 cm",
+        "MaxSize": "75 cm",
+        "Area": "För handredskap och ryssjor i Östersjöns delområden söder om gränsen mellan Västernorrland och Västerbotten"
+    },
+    {
+        "Species": "Gös",
+        "MinSize": "45 cm",
+        "MaxSize": null,
+        "Area": "Östersjöns samtliga delområden (ej handredskap/ryssjor)"
+    },
+    {
+        "Species": "Gös",
+        "MinSize": "45 cm",
+        "MaxSize": "60 cm",
+        "Area": "Östersjöns samtliga delområden (handredskap/ryssjor)"
+    },
+    {
+        "Species": "Sill",
+        "MinSize": "18 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt"
+    },
+    {
+        "Species": "Makrill",
+        "MinSize": "20 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt"
+    },
+    {
+        "Species": "Makrill",
+        "MinSize": "30 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt vid foderfiske"
+    },
+    {
+        "Species": "Taggmakrill",
+        "MinSize": "15 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt"
+    },
+    {
+        "Species": "Torsk",
+        "MinSize": "30 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt"
+    },
+    {
+        "Species": "Torsk",
+        "MinSize": "38 cm",
+        "MaxSize": null,
+        "Area": "Östersjöns samtliga delområden"
+    },
+    {
+        "Species": "Kolja",
+        "MinSize": "27 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt"
+    },
+    {
+        "Species": "Gråsej",
+        "MinSize": "30 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt"
+    },
+    {
+        "Species": "Kummel",
+        "MinSize": "30 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt"
+    },
+    {
+        "Species": "Vitling",
+        "MinSize": "23 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt"
+    },
+    {
+        "Species": "Skrubbskädda",
+        "MinSize": "20 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt"
+    },
+    {
+        "Species": "Skrubbskädda",
+        "MinSize": "23 cm",
+        "MaxSize": null,
+        "Area": "Östersjön delområde 22-25"
+    },
+    {
+        "Species": "Skrubbskädda",
+        "MinSize": "21 cm",
+        "MaxSize": null,
+        "Area": "Östersjön delområde 26-28"
+    },
+    {
+        "Species": "Skrubbskädda",
+        "MinSize": "18 cm",
+        "MaxSize": null,
+        "Area": "Östersjön delområde 29-syd"
+    },
+    {
+        "Species": "Rödspätta",
+        "MinSize": "27 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt"
+    },
+    {
+        "Species": "Rödspätta",
+        "MinSize": "25 cm",
+        "MaxSize": null,
+        "Area": "Östersjöns samtliga delområden"
+    },
+    {
+        "Species": "Sandskädda",
+        "MinSize": "23 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt"
+    },
+    {
+        "Species": "Rödtunga",
+        "MinSize": "28 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt"
+    },
+    {
+        "Species": "Bergtunga",
+        "MinSize": "25 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt"
+    },
+    {
+        "Species": "Äkta tunga",
+        "MinSize": "24 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt"
+    },
+    {
+        "Species": "Slätvar",
+        "MinSize": "30 cm",
+        "MaxSize": null,
+        "Area": "Samtliga havsområden"
+    },
+    {
+        "Species": "Piggvar",
+        "MinSize": "30 cm",
+        "MaxSize": null,
+        "Area": "Samtliga havsområden"
+    },
+    {
+        "Species": "Glasvar",
+        "MinSize": "25 cm",
+        "MaxSize": null,
+        "Area": "Skagerrak, Kattegatt"
+    }
+]

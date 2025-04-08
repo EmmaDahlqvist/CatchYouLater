@@ -2,6 +2,7 @@ import '../frontend/css/style.css'
 import typescriptLogo from '../typescript.svg'
 import viteLogo from '/vite.svg'
 import { setupCounter } from './counter.ts'
+import { fetchFishingRegulations, type FishingRegulation } from './fetchFishingRegulations.ts'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
@@ -22,3 +23,12 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 `
 
 setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+
+// Example code of how to use the fetchFishingRegulations function
+async function loadData() {
+  const data: FishingRegulation[] = await fetchFishingRegulations();
+  data.forEach(element => {
+    console.log(element.Species) // could be element.MinSize, element.MaxSize, element.Area ...
+  });
+}
+loadData();
