@@ -10,7 +10,7 @@ export function displayFishingRegulations(data: FishingRegulation[], containerId
 
   // --- Filtering Example ---
   // Define the filter criteria (e.g., only show regulations for 'Lax')
-  const exampleFilter: RegulationFilter = { Species: 'Lax' };
+  const exampleFilter: RegulationFilter = { Species: 'lax'};
   // Apply the filter
   const filteredData = filterRegulations(data, exampleFilter);
   // ------------------------
