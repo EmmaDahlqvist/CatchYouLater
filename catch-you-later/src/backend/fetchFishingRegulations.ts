@@ -26,15 +26,22 @@ export function filterRegulations(
         const filterValue = filters[filterKey];
         const regulationValue = regulation[filterKey];
 
-        // If the regulation's value for this key doesn't match the filter value, exclude it
-        // Handles null comparison correctly (filterValue === null means we want regulations where the value is null)
-        if (regulationValue !== filterValue) {
-          return false; // Doesn't match this filter criterion
+
+        if (typeof regulationValue === 'string' && typeof filterValue === 'string') {
+          if (regulationValue.toLowerCase() !== filterValue.toLowerCase()) {
+            return false; 
+          }
+        } else {
+          // If not both strings, perform a standard comparison
+          // Handles null comparison correctly (filterValue === null means we want regulations where the value is null)
+          if (regulationValue !== filterValue) {
+            return false; // Doesn't match this filter criterion
+          }
         }
       } else {
          // Optionally handle cases where the filter key isn't part of FishingRegulation,
          // though the RegulationFilter type should largely prevent this.
-         // console.warn(`Filter key "${key}" is not a valid attribute of FishingRegulation.`);
+         // console.warn(`Filter key \"${key}\" is not a valid attribute of FishingRegulation.`);
          // Depending on desired behavior, you might want to return false or ignore the invalid key.
          // For now, we'll ignore invalid keys.
       }
@@ -43,6 +50,7 @@ export function filterRegulations(
     return true;
   });
 }
+
 
 /* A function to fetch fishing regulations from a JSON file */
 export async function fetchFishingRegulations(): Promise<FishingRegulation[]> {
