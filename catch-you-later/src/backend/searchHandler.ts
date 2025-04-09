@@ -1,5 +1,7 @@
 import { displayFishingRegulations } from './displayFishingRegulations.ts';
-import type { FishingRegulation } from './fetchFishingRegulations.ts';
+import type { FishingRegulation, RegulationFilter } from './fetchFishingRegulations.ts';
+import { filterRegulations } from './fetchFishingRegulations.ts';
+
 
 export function setupSearchBar(
   searchBarId: string,
@@ -14,12 +16,17 @@ export function setupSearchBar(
   }
 
   searchBar.addEventListener('input', () => {
-    const query = searchBar.value.toLowerCase();
+    const query = searchBar.value;
 
-    const filteredRegulations = regulations.filter(regulation =>
-      regulation.Species.toLowerCase().includes(query)
-    );
+    if (!query) {
+      displayFishingRegulations(regulations, containerId);
+      return;
+    }
+
+    const filter: RegulationFilter = { Species: query};
+    const filteredRegulations = filterRegulations(regulations, filter);
 
     displayFishingRegulations(filteredRegulations, containerId);
   });
+
 }
