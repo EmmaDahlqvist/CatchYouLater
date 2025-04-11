@@ -22,7 +22,8 @@ export function setupSearchBar(
     }
 
     const filterReg = regulations.filter(regulation =>
-      regulation.Species.toLowerCase().includes(query)
+      regulation.Species.toLowerCase().includes(query) || 
+      regulation.Area.toLowerCase().includes(query)
     );
     
     displayFishingRegulations(filterReg, containerId);

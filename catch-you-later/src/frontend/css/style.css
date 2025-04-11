@@ -51,7 +51,7 @@ body {
 }
 
 #searchBar::placeholder {
-  color: #555;
+  color: #999;
 }
 
 #searchBar:hover {
