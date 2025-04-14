@@ -65,6 +65,11 @@ export async function fetchFishingRegulations(): Promise<FishingRegulation[]> {
 
 /*KODEN OVAN HÖR TILL DET GAMLA, KANSKE INTE BEHÖVS MER???*/
 
+type GearType = string | {
+  gearName?: string;
+  gearCode?: string;
+};
+
 type Rule = {
   ruleId: string;
   ruleText?: string;
@@ -74,7 +79,7 @@ type Rule = {
   geographies?: string[];
   gearTypeRestriction?: {
     allGearTypes?: boolean;
-    explicitGearTypes?: string[];
+    explicitGearTypes?: GearType[];
     species?: {
       speciesCode: string;
       speciesNameSwedish: string;
@@ -84,6 +89,7 @@ type Rule = {
     }[];
   };
 };
+
 
 export type FormattedRule = {
   species: string;
@@ -109,6 +115,8 @@ async function extractFishingRules() {
   let after = null;
   let hasMore = true;
 
+  // Loop to fetch all rules in batches of 20
+  // until there are no more rules to fetch
   while (hasMore) {
     const url = new URL('https://gw-test.havochvatten.se/external-public/fishing-regulations/v1/rules');
     url.searchParams.set('limit', '20');
@@ -123,6 +131,7 @@ async function extractFishingRules() {
     console.log(data)
     const rules = data.list;
 
+    // Check if there are no more rules to fetch
     if (rules.length === 0) {
       hasMore = false;
     } else {
@@ -140,6 +149,8 @@ async function fetchAllGeographies(): Promise<Map<string, string>> {
   let after: string | null = null;
   let hasMore = true;
 
+  // Loop to fetch all geographies in batches of 20
+  // until there are no more geographies to fetch
   while (hasMore) {
     const url = new URL('https://gw-test.havochvatten.se/external-public/fishing-regulations/v1/geographies');
     url.searchParams.set('limit', '20');
@@ -173,7 +184,7 @@ async function formatRules(rules: Rule[], geoMap: Map<string, string>): Promise<
       ) ?? [];
 
       const locations = rule.geographies?.map(id => geoMap.get(id) ?? 'Unknown') ?? [];
-
+      console.log('🔍 explicitGearTypes:', rule.gearTypeRestriction?.explicitGearTypes);
       return {
         species: species.join(', ') || '---',
         text: rule.ruleText || '---',
@@ -181,8 +192,15 @@ async function formatRules(rules: Rule[], geoMap: Map<string, string>): Promise<
         type: rule.ruleType || '---',
         startsAt: rule.entryIntoForceAt?.split('T')[0] || '---',
         gear: rule.gearTypeRestriction?.allGearTypes
-          ? 'Alla redskap tillåtna'
-          : (rule.gearTypeRestriction?.explicitGearTypes?.join(', ') || 'Inga specifika redskap'),
+        ? 'Alla redskap tillåtna'
+        : Array.isArray(rule.gearTypeRestriction?.explicitGearTypes)
+          ? rule.gearTypeRestriction.explicitGearTypes
+              .map(g => typeof g === 'string'
+                ? g
+                : g.gearName ?? g.gearCode ?? 'okänt redskap'
+              )
+              .join(', ')
+          : 'Inga specifika redskap',
         targetGroup: rule.targetGroups?.join(', ') || '---',
       };
     })
