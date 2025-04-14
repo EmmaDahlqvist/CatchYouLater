@@ -61,3 +61,133 @@ export async function fetchFishingRegulations(): Promise<FishingRegulation[]> {
 
     return await response.json();
 }
+
+
+/*KODEN OVAN HÖR TILL DET GAMLA, KANSKE INTE BEHÖVS MER???*/
+
+type Rule = {
+  ruleId: string;
+  ruleText?: string;
+  ruleType?: string;
+  entryIntoForceAt?: string;
+  targetGroups?: string[];
+  geographies?: string[];
+  gearTypeRestriction?: {
+    allGearTypes?: boolean;
+    explicitGearTypes?: string[];
+    species?: {
+      speciesCode: string;
+      speciesNameSwedish: string;
+      speciesNameEnglish: string;
+      speciesNameLatin: string;
+      speciesSubcategory?: string;
+    }[];
+  };
+};
+
+export type FormattedRule = {
+  species: string;
+  text: string;
+  location: string;
+  type: string;
+  startsAt: string;
+  gear: string;
+  targetGroup: string;
+};
+
+/* A function to fetch all fishing regulations from the API */
+export async function fetchAllFishingRegulations(): Promise<FormattedRule[]> {
+  const rules = await extractFishingRules();
+  const geoMap = await fetchAllGeographies();
+  const formattedRules = await formatRules(rules, geoMap);
+  return formattedRules;
+}
+
+/* A function to extract fishing rules from the API */
+async function extractFishingRules() {
+  const allRules = [];
+  let after = null;
+  let hasMore = true;
+
+  while (hasMore) {
+    const url = new URL('https://gw-test.havochvatten.se/external-public/fishing-regulations/v1/rules');
+    url.searchParams.set('limit', '20');
+    if (after) url.searchParams.set('after', after);
+
+    const response = await fetch(url.toString());
+    if (!response.ok) {
+      throw new Error('Failed to fetch regulations');
+    }
+
+    const data = await response.json();
+    console.log(data)
+    const rules = data.list;
+
+    if (rules.length === 0) {
+      hasMore = false;
+    } else {
+      allRules.push(...rules);
+      after = rules[rules.length - 1].ruleId;
+    }
+  }
+
+  return allRules;
+}
+
+/* A function to fetch all geographies from the API */
+async function fetchAllGeographies(): Promise<Map<string, string>> {
+  const geoMap = new Map<string, string>();
+  let after: string | null = null;
+  let hasMore = true;
+
+  while (hasMore) {
+    const url = new URL('https://gw-test.havochvatten.se/external-public/fishing-regulations/v1/geographies');
+    url.searchParams.set('limit', '20');
+    if (after) url.searchParams.set('after', after);
+
+    const res = await fetch(url.toString());
+    const data = await res.json();
+    console.log('Geography API response:', data); // lägg till detta!
+    const list = data.list;
+
+    for (const geo of list) {
+      geoMap.set(geo.geographyId, geo.geographyName);
+    }
+
+    hasMore = list.length > 0;
+    after = list.at(-1)?.geographyId;
+  }
+
+  return geoMap;
+}
+
+
+/* A function to format the fishing rules into a more readable format */
+async function formatRules(rules: Rule[], geoMap: Map<string, string>): Promise<FormattedRule[]> {
+  return await Promise.all(
+    rules.map(async (rule) => {
+      const species = rule.gearTypeRestriction?.species?.map((s) =>
+        s.speciesSubcategory
+          ? `${s.speciesNameSwedish} (${s.speciesSubcategory})`
+          : s.speciesNameSwedish
+      ) ?? [];
+
+      const locations = rule.geographies?.map(id => geoMap.get(id) ?? 'Unknown') ?? [];
+
+      return {
+        species: species.join(', ') || '---',
+        text: rule.ruleText || '---',
+        location: locations.join(', ') || '---',
+        type: rule.ruleType || '---',
+        startsAt: rule.entryIntoForceAt?.split('T')[0] || '---',
+        gear: rule.gearTypeRestriction?.allGearTypes
+          ? 'Alla redskap tillåtna'
+          : (rule.gearTypeRestriction?.explicitGearTypes?.join(', ') || 'Inga specifika redskap'),
+        targetGroup: rule.targetGroups?.join(', ') || '---',
+      };
+    })
+  );
+}
+
+
+
