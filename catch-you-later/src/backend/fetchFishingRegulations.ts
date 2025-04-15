@@ -103,78 +103,62 @@ export type FormattedRule = {
 
 /* A function to fetch all fishing regulations from the API */
 export async function fetchAllFishingRegulations(): Promise<FormattedRule[]> {
-  const rules = await extractFishingRules();
-  const geoMap = await fetchAllGeographies();
-  const formattedRules = await formatRules(rules, geoMap);
+  const rules = await fetchAllFishingRules();
+  const formattedRules = await formatRules(rules);
   return formattedRules;
 }
 
-/* A function to extract fishing rules from the API */
-async function extractFishingRules() {
-  const allRules = [];
-  let after = null;
+/* A function to fetch all fishing rules from the API / from localStorage*/
+async function fetchAllFishingRules(): Promise<Rule[]> {
+
+  const localStorageData = loadFishingRulesFromStorage();
+  if(localStorageData != null) {
+    return localStorageData;
+  }
+  // If we don't have a fresh cached version, fetch fresh data from the API
+  return await fetchFishingRulesFromAPI();
+}
+
+/* A function to fetch all fishing rules from the API (havOchVatten)*/
+async function fetchFishingRulesFromAPI(): Promise<Rule[]> {
+  // Fetch fresh data from the API, had no cached data
+  const allRules: Rule[] = [];
+  let after: string | null = null;
   let hasMore = true;
 
-  // Loop to fetch all rules in batches of 20
-  // until there are no more rules to fetch
+  // Loop through rules 20 at a time until we have all of them
   while (hasMore) {
     const url = new URL('https://gw-test.havochvatten.se/external-public/fishing-regulations/v1/rules');
     url.searchParams.set('limit', '20');
     if (after) url.searchParams.set('after', after);
 
-    const response = await fetch(url.toString());
-    if (!response.ok) {
-      throw new Error('Failed to fetch regulations');
-    }
+    const res = await fetch(url.toString());
+    if (!res.ok) throw new Error('Could not fetch fishing rules');
 
-    const data = await response.json();
-    console.log(data)
-    const rules = data.list;
+    const data = await res.json();
+    const list: Rule[] = data.list;
 
-    // Check if there are no more rules to fetch
-    if (rules.length === 0) {
-      hasMore = false;
+    allRules.push(...list);
+
+    if (list.length < 20) {
+      hasMore = false; // sista sidan
     } else {
-      allRules.push(...rules);
-      after = rules[rules.length - 1].ruleId;
+      after = list.at(-1)?.ruleId ?? null;
     }
   }
+
+  saveFishingRulesToStorage(allRules);
 
   return allRules;
-}
 
-/* A function to fetch all geographies from the API */
-async function fetchAllGeographies(): Promise<Map<string, string>> {
-  const geoMap = new Map<string, string>();
-  let after: string | null = null;
-  let hasMore = true;
-
-  // Loop to fetch all geographies in batches of 20
-  // until there are no more geographies to fetch
-  while (hasMore) {
-    const url = new URL('https://gw-test.havochvatten.se/external-public/fishing-regulations/v1/geographies');
-    url.searchParams.set('limit', '20');
-    if (after) url.searchParams.set('after', after);
-
-    const res = await fetch(url.toString());
-    const data = await res.json();
-    console.log('Geography API response:', data); // lägg till detta!
-    const list = data.list;
-
-    for (const geo of list) {
-      geoMap.set(geo.geographyId, geo.geographyName);
-    }
-
-    hasMore = list.length > 0;
-    after = list.at(-1)?.geographyId;
-  }
-
-  return geoMap;
 }
 
 
 /* A function to format the fishing rules into a more readable format */
-async function formatRules(rules: Rule[], geoMap: Map<string, string>): Promise<FormattedRule[]> {
+async function formatRules(rules: Rule[]): Promise<FormattedRule[]> {
+  const geoCache = loadGeoCacheFromStorage();
+
+  // Format the rules into a more readable format
   return await Promise.all(
     rules.map(async (rule) => {
       const species = rule.gearTypeRestriction?.species?.map((s) =>
@@ -183,12 +167,14 @@ async function formatRules(rules: Rule[], geoMap: Map<string, string>): Promise<
           : s.speciesNameSwedish
       ) ?? [];
 
-      const locations = rule.geographies?.map(id => geoMap.get(id) ?? 'Unknown') ?? [];
-      console.log('🔍 explicitGearTypes:', rule.gearTypeRestriction?.explicitGearTypes);
+      const locationNames = await Promise.all(
+        (rule.geographies ?? []).map(id => getGeoName(id, geoCache))
+      );
+
       return {
         species: species.join(', ') || '---',
         text: rule.ruleText || '---',
-        location: locations.join(', ') || '---',
+        location: locationNames.join(', ') || '---',
         type: rule.ruleType || '---',
         startsAt: rule.entryIntoForceAt?.split('T')[0] || '---',
         gear: rule.gearTypeRestriction?.allGearTypes
@@ -205,6 +191,92 @@ async function formatRules(rules: Rule[], geoMap: Map<string, string>): Promise<
       };
     })
   );
+}
+
+/* A function to get the name of a geography by its ID */
+async function getGeoName(id: string, geoCache: Map<string, string>): Promise<string> {
+  // Check if we have a cached version of the geography name
+  if (geoCache.has(id)) {
+    return geoCache.get(id)!;
+  }
+
+  // If we don't have a cached version, fetch it from the API
+  try {
+    const res = await fetch(`https://gw-test.havochvatten.se/external-public/fishing-regulations/v1/geographies/${id}`);
+    if (!res.ok) throw new Error('Failed to fetch geo');
+
+    const data = await res.json();
+    const name = data.geographyName ?? 'Okänd plats';
+
+    geoCache.set(id, name);
+    saveGeoCacheToStorage(geoCache);
+
+    return name;
+  } catch (err) {
+    console.error(`Failed to get geography for ID ${id}`, err);
+    return 'Okänd plats';
+  }
+}
+
+/* A function to load geoMap cache from localstorage */
+function loadGeoCacheFromStorage(): Map<string, string> {
+  const cached = localStorage.getItem('geoMap');
+  const timestamp = localStorage.getItem('geoMap:timestamp');
+  const maxAge = 1000 * 60 * 60 * 72; // 72h
+
+  const isFresh = cached && timestamp && Date.now() - Number(timestamp) < maxAge;
+
+  // Check if we have a cached version and if it's still fresh
+  // (less than 72 hours old)
+  if (isFresh) {
+    try {
+      const entries: [string, string][] = JSON.parse(cached);
+      return new Map(entries);
+    } catch {
+      console.warn('Kunde inte läsa från geoMap-cachen, nollställer.');
+    }
+  }
+
+  return new Map();
+}
+
+/* A function to save geoMap cache to localstorage */
+function saveGeoCacheToStorage(map: Map<string, string>) {
+  const entries = [...map.entries()];
+  localStorage.setItem('geoMap', JSON.stringify(entries));
+  localStorage.setItem('geoMap:timestamp', String(Date.now()));
+}
+
+/* A function to save fishing rules to localStorage */
+function saveFishingRulesToStorage(rules: Rule[]) {
+  localStorage.setItem('fishingRules', JSON.stringify(rules));
+  localStorage.setItem('fishingRules:timestamp', String(Date.now()));
+  console.log('Saved rules to cache:', rules.length);
+}
+
+/* A function to fetch fishing rules from localStorage */
+function loadFishingRulesFromStorage() {
+  const cacheKey = 'fishingRules';
+  const timestampKey = 'fishingRules:timestamp';
+  const maxAge = 1000 * 60 * 60 * 72; // 72h
+
+  // Check if we have a cached version and if it's still fresh
+  // (less than maxAge old)
+  const cached = localStorage.getItem(cacheKey);
+  const cachedAt = localStorage.getItem(timestampKey);
+
+  const isFresh = cached && cachedAt && (Date.now() - Number(cachedAt) < maxAge);
+
+  if (isFresh) {
+    try {
+      console.log('Get fishing rules from cache...');
+      return JSON.parse(cached);
+    } catch (err) {
+      console.warn('Could not parse cached fishing rules, fetching fresh data...');
+    }
+  }
+
+  return null;
 }
 
 
