@@ -13,7 +13,7 @@ async function loadData() {
   displayFormattedFishingRegulations(apiData, '#regulations');
 
   // Set up the search bar functionality
-  setupSearchBar('searchBar', data, '#regulations');
+  setupSearchBar('searchBar', apiData, '#regulations');
 }
 
 loadData();

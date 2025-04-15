@@ -101,6 +101,26 @@ export type FormattedRule = {
   targetGroup: string;
 };
 
+const targetGroupLabels : Record<string, string> = {
+  RECREATIONAL : 'Fritidsfiske',
+  COMMERCIAL : 'Kommersiellt fiske'
+}
+
+const typeLabels : Record<string, string> = {
+  PROHIBITION : 'Förbud',
+  RECOMMENDATION : 'Rekommendation',
+  LIMITATION : 'Begränsning',
+  GENERAL: 'Allmän regel',
+  EXEMPTION: 'Undantag',
+  OBLIGITION: 'Skyldighet',
+  SPECIES_CONSTRAINT: 'Artbegränsning',
+  GEAR_CONSTRAINT: 'Redskapsbegränsning',
+  TIME_CONSTRAINT: 'Tidsbegränsning',
+  AREA_CONSTRAINT: 'Områdesbegränsning',
+  OTHER: 'Övrigt',
+  GEAR_RESTRICTION: 'Redskapsbegränsning'
+}
+
 /* A function to fetch all fishing regulations from the API */
 export async function fetchAllFishingRegulations(): Promise<FormattedRule[]> {
   const rules = await fetchAllFishingRules();
@@ -175,7 +195,7 @@ async function formatRules(rules: Rule[]): Promise<FormattedRule[]> {
         species: species.join(', ') || '---',
         text: rule.ruleText || '---',
         location: locationNames.join(', ') || '---',
-        type: rule.ruleType || '---',
+        type: typeLabels[rule.ruleType ?? ''] ?? rule.ruleType ?? '---',
         startsAt: rule.entryIntoForceAt?.split('T')[0] || '---',
         gear: rule.gearTypeRestriction?.allGearTypes
         ? 'Alla redskap tillåtna'
@@ -183,11 +203,13 @@ async function formatRules(rules: Rule[]): Promise<FormattedRule[]> {
           ? rule.gearTypeRestriction.explicitGearTypes
               .map(g => typeof g === 'string'
                 ? g
-                : g.gearName ?? g.gearCode ?? 'okänt redskap'
+                : g.gearName ?? g.gearCode ?? 'Okänt redskap'
               )
               .join(', ')
           : 'Inga specifika redskap',
-        targetGroup: rule.targetGroups?.join(', ') || '---',
+          targetGroup: rule.targetGroups
+          ?.map(group => targetGroupLabels[group] ?? group) // fallback till original om okänd
+          .join(', ') ?? '---',
       };
     })
   );
@@ -218,22 +240,23 @@ async function getGeoName(id: string, geoCache: Map<string, string>): Promise<st
   }
 }
 
+// How long to keep the cache in localStorage (in milliseconds)
+const maxCacheAge =  1000 * 60 * 60 * 72; // 72h
+
 /* A function to load geoMap cache from localstorage */
 function loadGeoCacheFromStorage(): Map<string, string> {
   const cached = localStorage.getItem('geoMap');
   const timestamp = localStorage.getItem('geoMap:timestamp');
-  const maxAge = 1000 * 60 * 60 * 72; // 72h
 
-  const isFresh = cached && timestamp && Date.now() - Number(timestamp) < maxAge;
+  const isFresh = cached && timestamp && Date.now() - Number(timestamp) < maxCacheAge;
 
   // Check if we have a cached version and if it's still fresh
-  // (less than 72 hours old)
   if (isFresh) {
     try {
       const entries: [string, string][] = JSON.parse(cached);
       return new Map(entries);
     } catch {
-      console.warn('Kunde inte läsa från geoMap-cachen, nollställer.');
+      console.warn('Could not read geoMap cache.');
     }
   }
 
@@ -258,14 +281,12 @@ function saveFishingRulesToStorage(rules: Rule[]) {
 function loadFishingRulesFromStorage() {
   const cacheKey = 'fishingRules';
   const timestampKey = 'fishingRules:timestamp';
-  const maxAge = 1000 * 60 * 60 * 72; // 72h
 
   // Check if we have a cached version and if it's still fresh
-  // (less than maxAge old)
   const cached = localStorage.getItem(cacheKey);
   const cachedAt = localStorage.getItem(timestampKey);
 
-  const isFresh = cached && cachedAt && (Date.now() - Number(cachedAt) < maxAge);
+  const isFresh = cached && cachedAt && (Date.now() - Number(cachedAt) < maxCacheAge);
 
   if (isFresh) {
     try {
