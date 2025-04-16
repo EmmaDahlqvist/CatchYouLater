@@ -1,28 +1,20 @@
-/* A type for fetching fishing regulations */
-export type FishingRegulation = {
-    Species: string;
-    MinSize: string | null;
-    MaxSize: string | null;
-    Area: string;
-};
-
 /* A type for the filter criteria */
 export type RegulationFilter = {
-  [K in keyof FishingRegulation]?: FishingRegulation[K];
+  [K in keyof FormattedFishingRule]?: FormattedFishingRule[K];
 };
 
 /* A function to filter fishing regulations based on specified criteria */
 export function filterRegulations(
-  regulations: FishingRegulation[],
+  regulations: FormattedFishingRule[],
   filters: RegulationFilter
-): FishingRegulation[] {
+): FormattedFishingRule[] {
   return regulations.filter(regulation => {
     // Iterate over each key in the filters object
     for (const key in filters) {
       // Check if the filter key is a valid key of FishingRegulation
       if (Object.prototype.hasOwnProperty.call(filters, key) && key in regulation) {
         // Type assertion to help TypeScript understand the key
-        const filterKey = key as keyof FishingRegulation;
+        const filterKey = key as keyof FormattedFishingRule;
         const filterValue = filters[filterKey];
         const regulationValue = regulation[filterKey];
 
@@ -51,26 +43,13 @@ export function filterRegulations(
   });
 }
 
-
-/* A function to fetch fishing regulations from a JSON file */
-export async function fetchFishingRegulations(): Promise<FishingRegulation[]> {
-    const response = await fetch('/data/fishing_regulations.json');
-    if (!response.ok) {
-        throw new Error('Failed to fetch fishing regulations');
-    }
-
-    return await response.json();
-}
-
-
-/*KODEN OVAN HÖR TILL DET GAMLA, KANSKE INTE BEHÖVS MER???*/
-
 type GearType = string | {
   gearName?: string;
   gearCode?: string;
 };
 
-type Rule = {
+/* A type for the fishing rules from the API */
+type FishingRule = {
   ruleId: string;
   ruleText?: string;
   ruleType?: string;
@@ -90,8 +69,8 @@ type Rule = {
   };
 };
 
-
-export type FormattedRule = {
+/* A type for the formatted fishing rules, easier to read*/
+export type FormattedFishingRule = {
   species: string;
   text: string;
   location: string;
@@ -101,11 +80,13 @@ export type FormattedRule = {
   targetGroup: string;
 };
 
+/*To translate the target groups to swedish*/
 const targetGroupLabels : Record<string, string> = {
   RECREATIONAL : 'Fritidsfiske',
   COMMERCIAL : 'Kommersiellt fiske'
 }
 
+/*To translate the type labels to swedish*/
 const typeLabels : Record<string, string> = {
   PROHIBITION : 'Förbud',
   RECOMMENDATION : 'Rekommendation',
@@ -121,15 +102,15 @@ const typeLabels : Record<string, string> = {
   GEAR_RESTRICTION: 'Redskapsbegränsning'
 }
 
-/* A function to fetch all fishing regulations from the API */
-export async function fetchAllFishingRegulations(): Promise<FormattedRule[]> {
-  const rules = await fetchAllFishingRules();
+/* A function to fetch all fishing regulations in a list of formatted rules*/
+export async function fetchAllFishingRegulations(): Promise<FormattedFishingRule[]> {
+  const rules = await fetchRegulationsFromAPIorStorage();
   const formattedRules = await formatRules(rules);
   return formattedRules;
 }
 
 /* A function to fetch all fishing rules from the API / from localStorage*/
-async function fetchAllFishingRules(): Promise<Rule[]> {
+async function fetchRegulationsFromAPIorStorage(): Promise<FishingRule[]> {
 
   const localStorageData = loadFishingRulesFromStorage();
   if(localStorageData != null) {
@@ -140,9 +121,9 @@ async function fetchAllFishingRules(): Promise<Rule[]> {
 }
 
 /* A function to fetch all fishing rules from the API (havOchVatten)*/
-async function fetchFishingRulesFromAPI(): Promise<Rule[]> {
+async function fetchFishingRulesFromAPI(): Promise<FishingRule[]> {
   // Fetch fresh data from the API, had no cached data
-  const allRules: Rule[] = [];
+  const allRules: FishingRule[] = [];
   let after: string | null = null;
   let hasMore = true;
 
@@ -156,12 +137,12 @@ async function fetchFishingRulesFromAPI(): Promise<Rule[]> {
     if (!res.ok) throw new Error('Could not fetch fishing rules');
 
     const data = await res.json();
-    const list: Rule[] = data.list;
+    const list: FishingRule[] = data.list;
 
     allRules.push(...list);
 
     if (list.length < 20) {
-      hasMore = false; // sista sidan
+      hasMore = false; // last page
     } else {
       after = list.at(-1)?.ruleId ?? null;
     }
@@ -175,7 +156,7 @@ async function fetchFishingRulesFromAPI(): Promise<Rule[]> {
 
 
 /* A function to format the fishing rules into a more readable format */
-async function formatRules(rules: Rule[]): Promise<FormattedRule[]> {
+async function formatRules(rules: FishingRule[]): Promise<FormattedFishingRule[]> {
   const geoCache = loadGeoCacheFromStorage();
 
   // Format the rules into a more readable format
@@ -208,7 +189,7 @@ async function formatRules(rules: Rule[]): Promise<FormattedRule[]> {
               .join(', ')
           : 'Inga specifika redskap',
           targetGroup: rule.targetGroups
-          ?.map(group => targetGroupLabels[group] ?? group) // fallback till original om okänd
+          ?.map(group => targetGroupLabels[group] ?? group) 
           .join(', ') ?? '---',
       };
     })
@@ -271,7 +252,7 @@ function saveGeoCacheToStorage(map: Map<string, string>) {
 }
 
 /* A function to save fishing rules to localStorage */
-function saveFishingRulesToStorage(rules: Rule[]) {
+function saveFishingRulesToStorage(rules: FishingRule[]) {
   localStorage.setItem('fishingRules', JSON.stringify(rules));
   localStorage.setItem('fishingRules:timestamp', String(Date.now()));
   console.log('Saved rules to cache:', rules.length);

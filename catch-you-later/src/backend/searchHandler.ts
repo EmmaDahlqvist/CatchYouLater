@@ -1,11 +1,9 @@
-import { displayFishingRegulations } from './displayFishingRegulations.ts';
-import type { FishingRegulation } from './fetchFishingRegulations.ts';
-import type { FormattedRule } from './fetchFishingRegulations.ts';
+import type { FormattedFishingRule } from './fetchFishingRegulations.ts';
 import { displayFormattedFishingRegulations } from './displayFishingRegulations.ts';
 
 export function setupSearchBar(
   searchBarId: string,
-  regulations: FormattedRule[],
+  regulations: FormattedFishingRule[],
   containerId: string
 ): void {
   const searchBar = document.getElementById(searchBarId) as HTMLInputElement;
