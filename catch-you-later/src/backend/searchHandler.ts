@@ -1,9 +1,9 @@
-import { displayFishingRegulations } from './displayFishingRegulations.ts';
-import type { FishingRegulation } from './fetchFishingRegulations.ts';
+import type { FormattedFishingRule } from './fetchFishingRegulations.ts';
+import { displayFormattedFishingRegulations } from './displayFishingRegulations.ts';
 
 export function setupSearchBar(
   searchBarId: string,
-  regulations: FishingRegulation[],
+  regulations: FormattedFishingRule[],
   containerId: string
 ): void {
   const searchBar = document.getElementById(searchBarId) as HTMLInputElement;
@@ -17,16 +17,22 @@ export function setupSearchBar(
     const query = searchBar.value.toLocaleLowerCase();
 
     if (!query) {
-      displayFishingRegulations(regulations, containerId);
+      displayFormattedFishingRegulations(regulations, containerId);
       return;
     }
 
     const filterReg = regulations.filter(regulation =>
-      regulation.Species.toLowerCase().includes(query) || 
-      regulation.Area.toLowerCase().includes(query)
+      regulation.species.toLowerCase().includes(query) || 
+      regulation.gear.toLowerCase().includes(query) ||
+      regulation.location.toLowerCase().includes(query) ||
+      regulation.text.toLowerCase().includes(query) ||
+      regulation.type.toLowerCase().includes(query) ||
+      regulation.targetGroup.toLowerCase().includes(query)
     );
+
+    console.log('Filtered regulations:', filterReg);
     
-    displayFishingRegulations(filterReg, containerId);
+    displayFormattedFishingRegulations(filterReg, containerId);
   });
 
 }
