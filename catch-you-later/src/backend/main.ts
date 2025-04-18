@@ -1,18 +1,17 @@
 import '../frontend/css/style.css';
+import 'leaflet/dist/leaflet.css';
 import { displayFormattedFishingRegulations } from './displayFishingRegulations.ts';
 import { fetchAllFishingRegulations } from './fetchFishingRegulations.ts';
 import { setupSearchBar } from './searchHandler.ts';
+import { initializeMap } from './mapHandler.ts';
 
-// Loads the fishing regulation cards
 async function loadData() {
-  const data = await fetchAllFishingRegulations();
+    const data = await fetchAllFishingRegulations();
 
-  // Display all regulations initially
-  // displayFishingRegulations(data, '#regulations');
-  displayFormattedFishingRegulations(data, '#regulations');
+    displayFormattedFishingRegulations(data, '#regulations');
+    setupSearchBar('searchBar', data, '#regulations');
 
-  // Set up the search bar functionality
-  setupSearchBar('searchBar', data, '#regulations');
+    await initializeMap();
 }
 
 loadData();
