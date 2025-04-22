@@ -67,6 +67,7 @@ export async function fetchAllFishingRegulations(): Promise<FormattedFishingRule
   return formattedRules;
 }
 
+/* A function to get the date from when the data was last updated (i.e when it was put into local storage) */
 export async function getLatestFetchDate() {
   let latestFetch = new Date(Date.now());
   const cached = localStorage.getItem('fishingRules:timestamp');
@@ -173,6 +174,7 @@ async function formatRules(rules: FishingRule[]): Promise<FormattedFishingRule[]
   );
 }
 
+/*A function to fetch all geographies, cached or from API */
 async function fetchAllGeographies(): Promise<Map<string, string>> {
   const cached = loadGeoCacheFromStorage();
   if (cached.size > 0) {
