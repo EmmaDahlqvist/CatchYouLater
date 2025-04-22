@@ -11,7 +11,22 @@
       <div class="search-container">
         <input type="text" id="searchBar" placeholder="Search..." />
       </div>
-      <div id="regulations"></div>
+      <div id="regulations">Loading regulations...</div>
+
+      <!-- Modal Structure -->
+      <div id="ruleModal" class="modal hidden">
+        <div class="modal-content">
+          <span class="close-button">&times;</span>
+          <h2 id="modalTitle"></h2>
+          <div class="modal-type-container">
+            <span id="modalTypeIndicator"></span>
+            <span id="modalTypeName"></span>
+          </div>
+          <p id="modalDescription"></p>
+        </div>
+      </div>
+      <!-- End Modal Structure -->
+
     </div>
     <script type="module" src="/src/backend/main.ts"></script>
   </body>
