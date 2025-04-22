@@ -1,101 +1,184 @@
-:root {
-  --bg-color: rgba(255, 255, 255, 0.3);
-  --border-color: rgba(255, 255, 255, 0.6);
-  --text-color: #222;
-  --accent: #42a5f5;
-  --accent-hover: #1e88e5;
-  font-family: 'Segoe UI', sans-serif;
-}
-
 body {
-  background: linear-gradient(120deg, #dbeafe, #f0f4ff);
-  color: var(--text-color);
+  background-color: #F4F4F4;
+}
+
+html, body {
   margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+}
+
+.app-wrapper {
+  display: flex;
+  gap: 2rem;
   padding: 2rem;
-  display: flex;
-  justify-content: center;
   align-items: flex-start;
-  min-height: 100vh;
-  box-sizing: border-box;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.content-container {
+.map-section {
+  flex: 1;
+  max-width: 400px;
+}
+
+.map-image {
   width: 100%;
-  max-width: 960px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
 }
 
-.search-container {
-  backdrop-filter: blur(12px);
-  background-color: var(--bg-color);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 1rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-  display: flex;
+.content-section {
+  flex: 2;
   justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  display: flex;
+  height: 100%;
+  overflow: hidden;
 }
 
-#searchBar {
-  width: 100%;
-  max-width: 500px;
-  padding: 0.8rem 1.2rem;
-  border-radius: 1.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.6);
-  color: #222;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+.search-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  margin: 3rem auto 3rem; 
+  width: 80%;               
+  max-width: 800px;
+}
+
+.search-bar input {
+  flex: 1;
+  font-size: 32px;
+  padding: 1.1rem 1.6rem;
+  border: 0px solid #D9D9D9;
+  border-radius: 40px 0 0 40px;
+
+  background-color: #D9D9D9;
+  color: #544747;
+  transition: border 0.2s ease;
+}
+
+.search-bar input:focus {
   outline: none;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #3399ff;
+  background-color: #D9D9D9;
 }
 
-#searchBar::placeholder {
-  color: #999;
+.search-bar button {
+  padding: 1.1rem 1.6rem;
+  background: #D9D9D9;
+  border: 0px solid #D9D9D9;
+  border-left: none;
+  border-radius: 0 40px 40px 0;
+  cursor: pointer;
+  font-size: 32px;
 }
 
-#searchBar:hover {
-  border-color: #aaa;
-}
-
-#searchBar:focus {
-  border-color: var(--accent);
-  background-color: #fff;
-  box-shadow: 0 0 0 4px rgba(66, 165, 245, 0.25);
-}
-
-.regulation-card {
-  background: var(--bg-color);
-  border: 1px solid var(--border-color);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-  color: var(--text-color);
-}
-
-.regulation-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+.rules-list {
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
+}
+
+.rule-card {
+  background: #BDDBFF;
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  font-size: 24px;
+  border-color: #B2B2B2;
+  border-width: 1.8px;
+  border-style: solid;
+}
+
+.rule-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.rule-column {
+  flex: 1;
+  min-width: 150px;
+  gap:1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.rule-column p {
+  color: #322F35;
+  font-size: 24px;
+  margin: 0;
+}
+
+
+.rule-buttons-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: auto;
+}
+
+.rule-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 0.3rem;
+}
+
+.rule-btn {
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  background: #007bff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  font-size:14px;
+}
+
+.rule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+  margin: 5px;
+  padding:10px;
+}
+
+.scroll-area::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scroll-area::-webkit-scrollbar-track {
+  background: #e0e0e0;
+  border-radius: 6px;
+}
+
+.scroll-area::-webkit-scrollbar-thumb {
+  background-color: #007bff;
+  border-radius: 6px;
+  border: 2px solid #e0e0e0;
+}
+
+
+.fixed-footer {
+  background-color: #f5f5f5;
+  height: 100px;
   text-align: center;
-}
-
-.regulation-grid strong {
   font-style: italic;
-  color: var(--accent);
+  font-size: 18px;
+  border-top: 1px solid #ccc;
+  bottom: 60px;
+
 }
 
-a {
-  color: var(--accent);
-  text-decoration: none;
-}
 
-a:hover {
-  color: var(--accent-hover);
-  text-decoration: underline;
-}
-
-html {
-  overflow-y: scroll;
-}

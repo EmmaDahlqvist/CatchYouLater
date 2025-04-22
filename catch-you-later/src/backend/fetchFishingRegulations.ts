@@ -1,48 +1,3 @@
-/* A type for the filter criteria */
-export type RegulationFilter = {
-  [K in keyof FormattedFishingRule]?: FormattedFishingRule[K];
-};
-
-/* A function to filter fishing regulations based on specified criteria */
-export function filterRegulations(
-  regulations: FormattedFishingRule[],
-  filters: RegulationFilter
-): FormattedFishingRule[] {
-  return regulations.filter(regulation => {
-    // Iterate over each key in the filters object
-    for (const key in filters) {
-      // Check if the filter key is a valid key of FishingRegulation
-      if (Object.prototype.hasOwnProperty.call(filters, key) && key in regulation) {
-        // Type assertion to help TypeScript understand the key
-        const filterKey = key as keyof FormattedFishingRule;
-        const filterValue = filters[filterKey];
-        const regulationValue = regulation[filterKey];
-
-
-        if (typeof regulationValue === 'string' && typeof filterValue === 'string') {
-          if (regulationValue.toLowerCase() !== filterValue.toLowerCase()) {
-            return false; 
-          }
-        } else {
-          // If not both strings, perform a standard comparison
-          // Handles null comparison correctly (filterValue === null means we want regulations where the value is null)
-          if (regulationValue !== filterValue) {
-            return false; // Doesn't match this filter criterion
-          }
-        }
-      } else {
-         // Optionally handle cases where the filter key isn't part of FishingRegulation,
-         // though the RegulationFilter type should largely prevent this.
-         // console.warn(`Filter key \"${key}\" is not a valid attribute of FishingRegulation.`);
-         // Depending on desired behavior, you might want to return false or ignore the invalid key.
-         // For now, we'll ignore invalid keys.
-      }
-    }
-    // If the regulation passed all filter checks, include it
-    return true;
-  });
-}
-
 type GearType = string | {
   gearName?: string;
   gearCode?: string;
@@ -69,11 +24,14 @@ type FishingRule = {
   };
 };
 
-/* A type for the formatted fishing rules, easier to read*/
+/* A type for the formatted fishing rules, easier to read/work with*/
 export type FormattedFishingRule = {
-  species: string;
+  species: string[];
   text: string;
-  location: string;
+  location: {
+    name: string;
+    id: string;
+  }[];
   type: string;
   startsAt: string;
   gear: string;
@@ -81,16 +39,16 @@ export type FormattedFishingRule = {
 };
 
 /*To translate the target groups to swedish*/
-const targetGroupLabels : Record<string, string> = {
-  RECREATIONAL : 'Fritidsfiske',
-  COMMERCIAL : 'Kommersiellt fiske'
+const targetGroupLabels: Record<string, string> = {
+  RECREATIONAL: 'Fritidsfiske',
+  COMMERCIAL: 'Kommersiellt fiske'
 }
 
 /*To translate the type labels to swedish*/
-const typeLabels : Record<string, string> = {
-  PROHIBITION : 'Förbud',
-  RECOMMENDATION : 'Rekommendation',
-  LIMITATION : 'Begränsning',
+const typeLabels: Record<string, string> = {
+  PROHIBITION: 'Förbud',
+  RECOMMENDATION: 'Rekommendation',
+  LIMITATION: 'Begränsning',
   GENERAL: 'Allmän regel',
   EXEMPTION: 'Undantag',
   OBLIGITION: 'Skyldighet',
@@ -109,11 +67,27 @@ export async function fetchAllFishingRegulations(): Promise<FormattedFishingRule
   return formattedRules;
 }
 
+export async function getLatestFetchDate() {
+  let latestFetch = new Date(Date.now());
+  const cached = localStorage.getItem('fishingRules:timestamp');
+
+  // if we have a cached version, use that
+  // else, assume we just fetched the data today
+  if(cached) {
+    latestFetch = new Date(Number(cached));
+  }
+
+  const formattedDate = latestFetch.toISOString().split('T')[0];
+
+  return formattedDate;
+
+}
+
 /* A function to fetch all fishing rules from the API / from localStorage*/
 async function fetchRegulationsFromAPIorStorage(): Promise<FishingRule[]> {
 
   const localStorageData = loadFishingRulesFromStorage();
-  if(localStorageData != null) {
+  if (localStorageData != null) {
     return localStorageData;
   }
   // If we don't have a fresh cached version, fetch fresh data from the API
@@ -157,7 +131,7 @@ async function fetchFishingRulesFromAPI(): Promise<FishingRule[]> {
 
 /* A function to format the fishing rules into a more readable format */
 async function formatRules(rules: FishingRule[]): Promise<FormattedFishingRule[]> {
-  const geoCache = loadGeoCacheFromStorage();
+  let geoMap = await fetchAllGeographies();
 
   // Format the rules into a more readable format
   return await Promise.all(
@@ -168,61 +142,74 @@ async function formatRules(rules: FishingRule[]): Promise<FormattedFishingRule[]
           : s.speciesNameSwedish
       ) ?? [];
 
-      const locationNames = await Promise.all(
-        (rule.geographies ?? []).map(id => getGeoName(id, geoCache))
-      );
+      const location = (rule.geographies ?? [])
+        .map(id => {
+          const geo = geoMap.get(id);
+          return geo ? { name: geo, id: id} : null;
+        })
+        .filter((loc): loc is { name: string; id: string } => loc !== null);
 
       return {
-        species: species.join(', ') || '---',
+        species: species,
         text: rule.ruleText || '---',
-        location: locationNames.join(', ') || '---',
+        location: location,
         type: typeLabels[rule.ruleType ?? ''] ?? rule.ruleType ?? '---',
         startsAt: rule.entryIntoForceAt?.split('T')[0] || '---',
         gear: rule.gearTypeRestriction?.allGearTypes
-        ? 'Alla redskap tillåtna'
-        : Array.isArray(rule.gearTypeRestriction?.explicitGearTypes)
-          ? rule.gearTypeRestriction.explicitGearTypes
+          ? 'Alla redskap tillåtna'
+          : Array.isArray(rule.gearTypeRestriction?.explicitGearTypes)
+            ? rule.gearTypeRestriction.explicitGearTypes
               .map(g => typeof g === 'string'
                 ? g
                 : g.gearName ?? g.gearCode ?? 'Okänt redskap'
               )
               .join(', ')
-          : 'Inga specifika redskap',
+            : 'Inga specifika redskap',
           targetGroup: rule.targetGroups
-          ?.map(group => targetGroupLabels[group] ?? group) 
-          .join(', ') ?? '---',
+            ?.map(group => targetGroupLabels[group] ?? group) 
+            .join(', ') ?? '---',
       };
     })
   );
 }
 
-/* A function to get the name of a geography by its ID */
-async function getGeoName(id: string, geoCache: Map<string, string>): Promise<string> {
-  // Check if we have a cached version of the geography name
-  if (geoCache.has(id)) {
-    return geoCache.get(id)!;
+async function fetchAllGeographies(): Promise<Map<string, string>> {
+  const cached = loadGeoCacheFromStorage();
+  if (cached.size > 0) {
+    console.log('Get geographies from cache...');
+    return loadGeoCacheFromStorage();
   }
 
-  // If we don't have a cached version, fetch it from the API
-  try {
-    const res = await fetch(`https://gw-test.havochvatten.se/external-public/fishing-regulations/v1/geographies/${id}`);
-    if (!res.ok) throw new Error('Failed to fetch geo');
+  const geoMap = new Map<string, string>();
+  let after: string | null = null;
+  let hasMore = true;
+
+  while (hasMore) {
+    const url = new URL('https://gw-test.havochvatten.se/external-public/fishing-regulations/v1/geographies');
+    url.searchParams.set('limit', '20');
+    if (after) url.searchParams.set('after', after);
+
+    const res = await fetch(url.toString());
+    if (!res.ok) throw new Error('Failed to fetch geographies');
 
     const data = await res.json();
-    const name = data.geographyName ?? 'Okänd plats';
+    const list = data.list ?? [];
 
-    geoCache.set(id, name);
-    saveGeoCacheToStorage(geoCache);
+    for (const geo of list) {
+      geoMap.set(geo.geographyId, geo.geographyName);
+    }
 
-    return name;
-  } catch (err) {
-    console.error(`Failed to get geography for ID ${id}`, err);
-    return 'Okänd plats';
+    hasMore = list.length > 0;
+    after = list.at(-1)?.geographyId ?? null;
   }
+
+  saveGeoCacheToStorage(geoMap);
+
+  return geoMap;
 }
 
 // How long to keep the cache in localStorage (in milliseconds)
-const maxCacheAge =  1000 * 60 * 60 * 72; // 72h
+const maxCacheAge = 1000 * 60 * 60 * 72; // 72h
 
 /* A function to load geoMap cache from localstorage */
 function loadGeoCacheFromStorage(): Map<string, string> {
@@ -283,3 +270,50 @@ function loadFishingRulesFromStorage() {
 
 
 
+
+
+
+/* A type for the filter criteria */
+export type RegulationFilter = {
+  [K in keyof FormattedFishingRule]?: FormattedFishingRule[K];
+};
+
+/* A function to filter fishing regulations based on specified criteria */
+export function filterRegulations(
+  regulations: FormattedFishingRule[],
+  filters: RegulationFilter
+): FormattedFishingRule[] {
+  return regulations.filter(regulation => {
+    // Iterate over each key in the filters object
+    for (const key in filters) {
+      // Check if the filter key is a valid key of FishingRegulation
+      if (Object.prototype.hasOwnProperty.call(filters, key) && key in regulation) {
+        // Type assertion to help TypeScript understand the key
+        const filterKey = key as keyof FormattedFishingRule;
+        const filterValue = filters[filterKey];
+        const regulationValue = regulation[filterKey];
+
+
+        if (typeof regulationValue === 'string' && typeof filterValue === 'string') {
+          if (regulationValue.toLowerCase() !== filterValue.toLowerCase()) {
+            return false;
+          }
+        } else {
+          // If not both strings, perform a standard comparison
+          // Handles null comparison correctly (filterValue === null means we want regulations where the value is null)
+          if (regulationValue !== filterValue) {
+            return false; // Doesn't match this filter criterion
+          }
+        }
+      } else {
+        // Optionally handle cases where the filter key isn't part of FishingRegulation,
+        // though the RegulationFilter type should largely prevent this.
+        // console.warn(`Filter key \"${key}\" is not a valid attribute of FishingRegulation.`);
+        // Depending on desired behavior, you might want to return false or ignore the invalid key.
+        // For now, we'll ignore invalid keys.
+      }
+    }
+    // If the regulation passed all filter checks, include it
+    return true;
+  });
+}

@@ -22,9 +22,13 @@ export function setupSearchBar(
     }
 
     const filterReg = regulations.filter(regulation =>
-      regulation.species.toLowerCase().includes(query) || 
+      regulation.species.some(specie =>
+        specie.toLowerCase().includes(query)
+      ) ||
       regulation.gear.toLowerCase().includes(query) ||
-      regulation.location.toLowerCase().includes(query) ||
+      regulation.location.some(location =>
+        location.name.toLowerCase().includes(query)
+      ) ||
       regulation.text.toLowerCase().includes(query) ||
       regulation.type.toLowerCase().includes(query) ||
       regulation.targetGroup.toLowerCase().includes(query)
