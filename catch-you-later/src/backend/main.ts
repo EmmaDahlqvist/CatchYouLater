@@ -10,7 +10,6 @@ async function loadData() {
   // Display all regulations initially
   // displayFishingRegulations(data, '#regulations');
   displayFormattedFishingRegulations(data, '#regulations');
-  attachRuleButtonListeners();
 
   // Set up the search bar functionality
   setupSearchBar('searchBar', data, '#regulations');
@@ -24,26 +23,6 @@ async function updateLatestFetchDate() {
   }
 }
 
-
-// Function to attach event listeners to rule buttons
-function attachRuleButtonListeners() {
-  const container = document.querySelector('#regulations');
-  if (!container) return;
-
-  container.addEventListener('click', (e) => {
-    const target = e.target as HTMLElement;
-
-    // Kolla om man klickat på en regelknapp
-    if (target.classList.contains('rule-btn')) {
-      const btn = target as HTMLButtonElement;
-
-      const text = decodeURIComponent(btn.dataset.ruleText || '');
-      const type = btn.dataset.ruleType;
-
-      console.log('Klickade regel:', { text, type });
-    }
-  });
-}
 
 updateLatestFetchDate();
 

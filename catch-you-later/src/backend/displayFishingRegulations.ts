@@ -1,4 +1,5 @@
 import type { FormattedFishingRule } from './fetchFishingRegulations';
+import { groupFormattedRulesBySpeciesAndLocation } from './helpers';
 
 export function displayFormattedFishingRegulations(
   data: FormattedFishingRule[],
@@ -10,21 +11,7 @@ export function displayFormattedFishingRegulations(
     return;
   }
 
-  // Group the rules by species and location 
-  const grouped = new Map<string, FormattedFishingRule[]>();
-
-  for (const rule of data) {
-    const key = `${rule.species}::${rule.location
-      .map(loc => loc.id)
-      .sort()
-      .join(', ')}`;
-
-    if (!grouped.has(key)) {
-      grouped.set(key, []);
-    }
-
-    grouped.get(key)!.push(rule);
-  }
+  const grouped = groupFormattedRulesBySpeciesAndLocation(data);
 
   // Html
   container.innerHTML = [...grouped.entries()]
@@ -75,4 +62,22 @@ export function displayFormattedFishingRegulations(
       `;
     })
     .join('');
+
+    attachRuleButtonListeners();
 }
+
+// Function to attach event listeners to rule buttons
+function attachRuleButtonListeners() {
+  document.querySelectorAll('.rule-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const el = e.currentTarget as HTMLButtonElement;
+
+      const text = decodeURIComponent(el.dataset.ruleText || '');
+      const type = el.dataset.ruleType;
+
+      console.log('Klickade regel:', {text, type });
+    });
+  });
+}
+
+
