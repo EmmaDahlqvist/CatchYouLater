@@ -47,8 +47,7 @@ html, body {
   align-items: center;
   justify-content: center; 
   margin: 3rem auto 3rem; 
-  width: 80%;               
-  max-width: 800px;
+  width: 60%;               
   box-sizing: border-box;
 }
 
