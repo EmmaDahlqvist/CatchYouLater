@@ -35,7 +35,7 @@ export function displayFormattedFishingRegulations(
         
           <div class="rule-column">
             <div><strong>Art</strong><br></div>
-            <div><a href="">${speciesLabel}</a></div>
+            <div><a href="https://www.youtube.com/watch?v=xvFZjo5PgG0">${speciesLabel}</a></div>
           </div>
 
           <div class="rule-column">
