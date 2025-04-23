@@ -21,14 +21,9 @@ html, body {
 }
 
 .map-section {
-  flex: 1;
+  flex: 0 1 500px; /* grow:0, shrink:1, basis:300px */
   max-width: 400px;
-}
-
-.map-image {
-  width: 100%;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  min-width: 200px; /* skydda mot för liten */
 }
 
 .content-section {
