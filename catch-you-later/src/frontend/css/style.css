@@ -18,8 +18,8 @@ html, body {
 }
 
 .map-section {
-  flex: 0 1 500px;
-  max-width: 500px;
+  flex: 0 1 450px;
+  max-width: 450px;
   min-width: 200px; 
 }
 
@@ -32,6 +32,8 @@ html, body {
   height: 100%;
   overflow: hidden;
   box-sizing: border-box;
+  transform: scale(0.9); 
+  transform-origin: top right;
 }
 
 .search-bar {
@@ -42,7 +44,6 @@ html, body {
   width: 60%;               
   box-sizing: border-box;
   border-radius: 40px ;
-  transform: scale(0.85); 
 
 }
 
@@ -202,7 +203,6 @@ html, body {
   width: 100%;
   padding:10px;
   box-sizing: border-box;
-  transform: scale(0.9); 
 }
 
 /*För firefox*/
