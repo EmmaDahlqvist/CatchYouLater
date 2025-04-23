@@ -91,6 +91,24 @@ html, body {
   border-style: solid;
 }
 
+@media (max-width: 1024px) {
+  .rule-card {
+    font-size: 18px;
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .rule-btn {
+    font-size: 12px;
+    padding: 0.5rem 1rem;
+  }
+
+  .rule-column p,
+  .rule-column a {
+    font-size: 18px;
+  }
+}
+
 .rule-row {
   display: flex;
   justify-content: space-between;
