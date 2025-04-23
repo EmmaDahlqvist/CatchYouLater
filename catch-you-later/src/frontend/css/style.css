@@ -178,14 +178,14 @@ html, body {
   margin: 5px;
   padding:10px;
   box-sizing: border-box;
-  margin-right: 15px;
 }
 
 /*För firefox*/
 @-moz-document url-prefix() {
   .scroll-area {
-    scrollbar-width: thin;
+    scrollbar-width: auto;
     scrollbar-color: #007bff #e0e0e0;
+    margin-right: 20px;
   }
 }
 
