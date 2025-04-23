@@ -280,3 +280,15 @@ html, body {
     height: auto;
   }
 }
+
+.map-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 850px;
+}
+
+#map {
+  width: 90%;
+  height: 90%;
+}

@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 const API_BASE_URL = 'https://gw-test.havochvatten.se/external-public/fishing-regulations/v1';
 
 export async function initializeMap(): Promise<L.Map> {
-    const map = L.map('map').setView([63.0, 16.0], 5); // Centered on Sweden
+    const map = L.map('map', { zoomSnap: 0 }).setView([62.0, 16.0], 4.8); // Centered on Sweden
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
@@ -12,16 +12,7 @@ export async function initializeMap(): Promise<L.Map> {
         maxZoom: 19
     }).addTo(map);
 
-    setTimeout(() => {
-        map.invalidateSize();
-    }, 1000);
-
-    window.addEventListener('resize', () => {
-        map.invalidateSize();
-      });
-
-    console.log('Map container size:', map.getSize());
-
+    
     const geographies = await fetchGeographies();
     drawPolygons(map, geographies);
     
