@@ -41,7 +41,16 @@ html, body {
   margin: 3rem auto 3rem; 
   width: 60%;               
   box-sizing: border-box;
+  border-radius: 40px ;
+
 }
+
+/* Effekt när musen är över hela baren */
+.search-bar:hover {
+  background-color: #e5e5e5;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+}
+
 
 .search-bar input {
   flex: 1;
@@ -70,6 +79,7 @@ html, body {
   cursor: pointer;
   font-size: 32px;
 }
+
 
 .search-bar button svg {
   width: 100%;  
@@ -146,7 +156,20 @@ html, body {
   font-weight: bold;
   cursor: pointer;
   font-size:14px;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
+
+.rule-btn:active {
+  transform: scale(0.97); /* Tryck-effekt */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3); /* Liten inbuktning */
+  background-color: #00000022; /* Liten mörkning, ovanpå original */
+}
+
+.rule-btn:hover {
+  filter: brightness(1.1);
+}
+
 
 .red-btn {
   background: #DA1212;
