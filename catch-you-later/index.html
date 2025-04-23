@@ -4,14 +4,36 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>Catch You Later</title>
   </head>
   <body>
-    <div class="content-container">
-      <div class="search-container">
-        <input type="text" id="searchBar" placeholder="Search..." />
+    <div class="app-wrapper">
+    <div class="map-section">
+      <p>karta här</p>
+    </div>
+
+    <div class="content-section">
+      <div class="search-bar">
+        <input type="text" placeholder="Sök..." id="searchBar" />
+        <button><span class="icon"><svg width="25" height="25" viewBox="0 0 30 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M27.6161 28.2894L21.432 22.1078M24.7728 14.0789C24.7728 20.3575 19.681 25.4473 13.3998 25.4473C7.11871 25.4473 2.02686 20.3575 2.02686 14.0789C2.02686 7.80026 7.11871 2.71045 13.3998 2.71045C19.681 2.71045 24.7728 7.80026 24.7728 14.0789Z" stroke="#1E1E1E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          </span></button>
       </div>
-      <div id="regulations"></div>
+
+        <div class="scroll-area">
+          <div class="rules-list" id="regulations">
+            <!-- Alla .rule-card genereras här -->
+          </div>
+        </div>
+      
+      </div>
+
+    </div>
+    <div class="fixed-footer">
+      <p>Datan är hämtad från Havs- och Vattennyndighetens API</p>
+      <p>Hämtad senast <span id="latest-fetch-date">-</span></p>
     </div>
     <script type="module" src="/src/backend/main.ts"></script>
   </body>
