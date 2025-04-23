@@ -33,7 +33,7 @@ html, body {
   overflow: hidden;
   box-sizing: border-box;
   transform: scale(0.9); 
-  transform-origin: top right;
+  transform-origin: center right;
 }
 
 .search-bar {
