@@ -71,6 +71,11 @@ html, body {
   font-size: 32px;
 }
 
+.search-bar button svg {
+  width: 100%;  
+  height: auto;
+}
+
 .rules-list {
   display: flex;
   flex-direction: column;
@@ -173,10 +178,18 @@ html, body {
   margin: 5px;
   padding:10px;
   box-sizing: border-box;
-  scrollbar-width: thin; /* thin | auto | none */
-  scrollbar-color: #007bff #e0e0e0; /* thumb color, track color */
+  margin-right: 10px;
 }
 
+/*För firefox*/
+@supports (scrollbar-width: thin) {
+  .scroll-area {
+    scrollbar-width: thin;
+    scrollbar-color: #007bff #e0e0e0;
+  }
+}
+
+/*För allt annat typ*/
 .scroll-area::-webkit-scrollbar {
   width: 12px;
 }
@@ -237,5 +250,10 @@ html, body {
   .search-bar button {
     padding: 1.1rem 1.6rem;
     font-size: 24px;
+  }
+
+  .search-bar button svg {
+    width: 80%;  
+    height: auto;
   }
 }
