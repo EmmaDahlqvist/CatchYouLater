@@ -110,6 +110,13 @@ html, body {
   flex-direction: column;
 }
 
+.small-rule-column {
+  min-width: 100px;
+  flex: 0.5;
+  display: flex;
+  flex-direction: column;
+}
+
 .rule-column p {
   color: #322F35;
   font-size: 24px;

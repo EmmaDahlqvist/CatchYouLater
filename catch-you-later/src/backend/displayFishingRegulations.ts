@@ -42,7 +42,7 @@ export function displayFormattedFishingRegulations(
             <div><p>${locationNames}</p></div>
           </div>
 
-          <div class="rule-column">
+          <div class="small-rule-column">
           </div>
 
 
