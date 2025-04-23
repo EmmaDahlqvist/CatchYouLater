@@ -178,11 +178,11 @@ html, body {
   margin: 5px;
   padding:10px;
   box-sizing: border-box;
-  margin-right: 10px;
+  margin-right: 15px;
 }
 
 /*För firefox*/
-@supports (scrollbar-width: thin) {
+@-moz-document url-prefix() {
   .scroll-area {
     scrollbar-width: thin;
     scrollbar-color: #007bff #e0e0e0;
