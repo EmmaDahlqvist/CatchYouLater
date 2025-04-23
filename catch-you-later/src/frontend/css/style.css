@@ -173,6 +173,8 @@ html, body {
   margin: 5px;
   padding:10px;
   box-sizing: border-box;
+  scrollbar-width: thin; /* thin | auto | none */
+  scrollbar-color: #007bff #e0e0e0; /* thumb color, track color */
 }
 
 .scroll-area::-webkit-scrollbar {
@@ -235,9 +237,5 @@ html, body {
   .search-bar button {
     padding: 1.1rem 1.6rem;
     font-size: 24px;
-  }
-
-  .app-wrapper {
-    height: 85vh;
   }
 }
