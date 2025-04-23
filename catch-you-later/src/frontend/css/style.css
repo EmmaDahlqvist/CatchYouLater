@@ -9,8 +9,6 @@ html, body {
   font-family: 'Inter', sans-serif;
 }
 
-
-
 .app-wrapper {
   display: flex;
   gap: 2rem;
@@ -21,9 +19,9 @@ html, body {
 }
 
 .map-section {
-  flex: 0 1 500px; /* grow:0, shrink:1, basis:300px */
+  flex: 0 1 400px;
   max-width: 400px;
-  min-width: 200px; /* skydda mot för liten */
+  min-width: 200px; 
 }
 
 .content-section {
@@ -91,23 +89,7 @@ html, body {
   border-style: solid;
 }
 
-@media (max-width: 1024px) {
-  .rule-card {
-    font-size: 18px;
-    padding: 0.8rem;
-    margin-bottom: 0.8rem;
-  }
 
-  .rule-btn {
-    font-size: 12px;
-    padding: 0.5rem 1rem;
-  }
-
-  .rule-column p,
-  .rule-column a {
-    font-size: 18px;
-  }
-}
 
 .rule-row {
   display: flex;
@@ -222,3 +204,40 @@ html, body {
 }
 
 
+
+@media (max-width: 1524px) {
+  .rule-card {
+    font-size: 18px;
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .rule-btn {
+    font-size: 12px;
+    padding: 0.5rem 1rem;
+  }
+
+  .rule-column p,
+  .rule-column a {
+    font-size: 18px;
+  }
+
+  .search-bar {
+    margin: 2rem auto 2rem; 
+  }
+
+  .search-bar input {
+    flex: 1;
+    font-size: 24px;
+    padding: 1.1rem 1.6rem;
+  }
+
+  .search-bar button {
+    padding: 1.1rem 1.6rem;
+    font-size: 24px;
+  }
+
+  .app-wrapper {
+    height: 85vh;
+  }
+}
