@@ -3,7 +3,7 @@ import { displayFormattedFishingRegulations } from './displayFishingRegulations.
 import { fetchAllFishingRegulations, getLatestFetchDate } from './fetchFishingRegulations.ts';
 import { setupSearchBar } from './searchHandler.ts';
 
-// Loads the fishing regulation cards
+/** Loads the fishing regulation cards and searchbar */
 async function loadData() {
   const data = await fetchAllFishingRegulations();
 
@@ -15,6 +15,7 @@ async function loadData() {
   setupSearchBar('searchBar', data, '#regulations');
 }
 
+/** Updates the latest fetch date in the UI */
 async function updateLatestFetchDate() {
   const latestFetchDate = await getLatestFetchDate();
   const dateElement = document.getElementById("latest-fetch-date");

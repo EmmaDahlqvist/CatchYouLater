@@ -3,7 +3,7 @@ type GearType = string | {
   gearCode?: string;
 };
 
-/* A type for the fishing rules from the API */
+/** A type for the fishing rules from the API */ 
 type FishingRule = {
   ruleId: string;
   ruleText?: string;
@@ -24,7 +24,7 @@ type FishingRule = {
   };
 };
 
-/* A type for the formatted fishing rules, easier to read/work with*/
+/** A type for the formatted fishing rules, easier to read/work with*/
 export type FormattedFishingRule = {
   species: string[];
   text: string;
@@ -38,13 +38,13 @@ export type FormattedFishingRule = {
   targetGroup: string;
 };
 
-/*To translate the target groups to swedish*/
+/**To translate the target groups to swedish*/
 const targetGroupLabels: Record<string, string> = {
   RECREATIONAL: 'Fritidsfiske',
   COMMERCIAL: 'Kommersiellt fiske'
 }
 
-/*To translate the type labels to swedish*/
+/**To translate the type labels to swedish*/
 const typeLabels: Record<string, string> = {
   PROHIBITION: 'Förbud',
   RECOMMENDATION: 'Rekommendation',
@@ -60,14 +60,14 @@ const typeLabels: Record<string, string> = {
   GEAR_RESTRICTION: 'Redskapsbegränsning'
 }
 
-/* A function to fetch all fishing regulations in a list of formatted rules*/
+/** A function to fetch all fishing regulations in a list of formatted rules*/
 export async function fetchAllFishingRegulations(): Promise<FormattedFishingRule[]> {
   const rules = await fetchRegulationsFromAPIorStorage();
   const formattedRules = await formatRules(rules);
   return formattedRules;
 }
 
-/* A function to get the date from when the data was last updated (i.e when it was put into local storage) */
+/** A function to get the date from when the data was last updated (i.e when it was put into local storage) */
 export async function getLatestFetchDate() {
   let latestFetch = new Date(Date.now());
   const cached = localStorage.getItem('fishingRules:timestamp');
@@ -84,7 +84,7 @@ export async function getLatestFetchDate() {
 
 }
 
-/* A function to fetch all fishing rules from the API / from localStorage*/
+/** A function to fetch all fishing rules from the API / from localStorage*/
 async function fetchRegulationsFromAPIorStorage(): Promise<FishingRule[]> {
 
   const localStorageData = loadFishingRulesFromStorage();
@@ -95,7 +95,7 @@ async function fetchRegulationsFromAPIorStorage(): Promise<FishingRule[]> {
   return await fetchFishingRulesFromAPI();
 }
 
-/* A function to fetch all fishing rules from the API (havOchVatten)*/
+/** A function to fetch all fishing rules from the API (havOchVatten)*/
 async function fetchFishingRulesFromAPI(): Promise<FishingRule[]> {
   // Fetch fresh data from the API, had no cached data
   const allRules: FishingRule[] = [];
@@ -130,7 +130,7 @@ async function fetchFishingRulesFromAPI(): Promise<FishingRule[]> {
 }
 
 
-/* A function to format the fishing rules into a more readable format */
+/** A function to format the fishing rules into a more readable format */
 async function formatRules(rules: FishingRule[]): Promise<FormattedFishingRule[]> {
   let geoMap = await fetchAllGeographies();
 
@@ -174,7 +174,7 @@ async function formatRules(rules: FishingRule[]): Promise<FormattedFishingRule[]
   );
 }
 
-/*A function to fetch all geographies, cached or from API */
+/**A function to fetch all geographies, cached or from API */
 async function fetchAllGeographies(): Promise<Map<string, string>> {
   const cached = loadGeoCacheFromStorage();
   if (cached.size > 0) {
@@ -213,7 +213,7 @@ async function fetchAllGeographies(): Promise<Map<string, string>> {
 // How long to keep the cache in localStorage (in milliseconds)
 const maxCacheAge = 1000 * 60 * 60 * 72; // 72h
 
-/* A function to load geoMap cache from localstorage */
+/** A function to load geoMap cache from localstorage, geo id and name */
 function loadGeoCacheFromStorage(): Map<string, string> {
   const cached = localStorage.getItem('geoMap');
   const timestamp = localStorage.getItem('geoMap:timestamp');
@@ -233,21 +233,21 @@ function loadGeoCacheFromStorage(): Map<string, string> {
   return new Map();
 }
 
-/* A function to save geoMap cache to localstorage */
+/** A function to save geoMap cache to localstorage, geo id and name */
 function saveGeoCacheToStorage(map: Map<string, string>) {
   const entries = [...map.entries()];
   localStorage.setItem('geoMap', JSON.stringify(entries));
   localStorage.setItem('geoMap:timestamp', String(Date.now()));
 }
 
-/* A function to save fishing rules to localStorage */
+/** A function to save fishing rules to localStorage */
 function saveFishingRulesToStorage(rules: FishingRule[]) {
   localStorage.setItem('fishingRules', JSON.stringify(rules));
   localStorage.setItem('fishingRules:timestamp', String(Date.now()));
   console.log('Saved rules to cache:', rules.length);
 }
 
-/* A function to fetch fishing rules from localStorage */
+/** A function to fetch fishing rules from localStorage */
 function loadFishingRulesFromStorage() {
   const cacheKey = 'fishingRules';
   const timestampKey = 'fishingRules:timestamp';

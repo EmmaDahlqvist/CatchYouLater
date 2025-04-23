@@ -134,8 +134,8 @@ html, body {
 }
 
 .rule-btn {
-  padding: 0.7rem 1.5rem;
-  border: none;
+  padding: 0.6rem 1.5rem;
+  border: 1px solid #2C2C2C;
   border-radius: 5px;
   background: #007bff;
   color: white;

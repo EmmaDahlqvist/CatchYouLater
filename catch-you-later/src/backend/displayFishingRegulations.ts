@@ -1,6 +1,7 @@
 import type { FormattedFishingRule } from './fetchFishingRegulations';
 import { groupFormattedRulesBySpeciesAndLocation, removeGeneralRules } from './helpers';
 
+/**Display fishing rules as cards and rule buttons */
 export function displayFormattedFishingRegulations(
   data: FormattedFishingRule[],
   containerId: string
@@ -72,12 +73,13 @@ export function displayFormattedFishingRegulations(
     attachRuleButtonListeners();
 }
 
-// Function to attach event listeners to rule buttons
+/** Function to attach event listeners to rule buttons*/ 
 function attachRuleButtonListeners() {
   buttonClickListener();
   buttonColorSelector();
 }
 
+/** Function to add event listeners to each button and log the rule text and type when clicked */
 function buttonClickListener (){
   document.querySelectorAll('.rule-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -91,6 +93,7 @@ function buttonClickListener (){
   });
 }
 
+/** Function to set the color of the buttons based on their type */
 function buttonColorSelector() {
   const buttons = document.querySelectorAll('.rule-btn');
   buttons.forEach((button) => {

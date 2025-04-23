@@ -1,6 +1,6 @@
 import type { FormattedFishingRule } from './fetchFishingRegulations.ts';
 
-/*Group the rules by species and location, each specie location pair gives a set of rules */
+/** Group the rules by species and location, each specie location pair gives a set of rules */
 export function groupFormattedRulesBySpeciesAndLocation(
   data: FormattedFishingRule[]
 ): Map<string, FormattedFishingRule[]> {
@@ -22,7 +22,7 @@ export function groupFormattedRulesBySpeciesAndLocation(
   return grouped;
 }
 
-/*Filter out the general rules from the data, i.e ones with type "Allmän regel"*/
+/** Filter out the general rules from the data, i.e ones with type "Allmän regel"*/
 export function removeGeneralRules(data: FormattedFishingRule[]): FormattedFishingRule[] {
   return data.filter(rule => rule.type !== 'Allmän regel');
 }
