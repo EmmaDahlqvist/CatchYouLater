@@ -9,12 +9,14 @@ html, body {
   font-family: 'Inter', sans-serif;
 }
 
+
+
 .app-wrapper {
   display: flex;
   gap: 2rem;
   padding: 2rem;
   align-items: flex-start;
-  height: 100vh;
+  height: 90vh;
   overflow: hidden;
 }
 
@@ -37,6 +39,7 @@ html, body {
   display: flex;
   height: 100%;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .search-bar {
@@ -46,6 +49,7 @@ html, body {
   margin: 3rem auto 3rem; 
   width: 80%;               
   max-width: 800px;
+  box-sizing: border-box;
 }
 
 .search-bar input {
@@ -139,6 +143,22 @@ html, body {
   font-size:14px;
 }
 
+.red-btn {
+  background: #DA1212;
+}
+
+.purple-btn {
+  background: #8B34E9;
+}
+
+.blue-btn {
+  background: #207BDB;
+}
+
+.gray-btn {
+  background: #A9A9A9;
+}
+
 .rule-header {
   display: flex;
   justify-content: space-between;
@@ -152,10 +172,11 @@ html, body {
   width: 100%;
   margin: 5px;
   padding:10px;
+  box-sizing: border-box;
 }
 
 .scroll-area::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
 }
 
 .scroll-area::-webkit-scrollbar-track {

@@ -1,5 +1,5 @@
 import type { FormattedFishingRule } from './fetchFishingRegulations';
-import { groupFormattedRulesBySpeciesAndLocation } from './helpers';
+import { groupFormattedRulesBySpeciesAndLocation, removeGeneralRules } from './helpers';
 
 export function displayFormattedFishingRegulations(
   data: FormattedFishingRule[],
@@ -11,7 +11,13 @@ export function displayFormattedFishingRegulations(
     return;
   }
 
-  const grouped = groupFormattedRulesBySpeciesAndLocation(data);
+  // Remove "Allmän regel" rules
+  const filteredData = removeGeneralRules(data);
+
+  // Group the rules by species and location
+  const grouped = groupFormattedRulesBySpeciesAndLocation(filteredData);
+
+  
 
   // Html
   container.innerHTML = [...grouped.entries()]
@@ -43,17 +49,17 @@ export function displayFormattedFishingRegulations(
           <div class="rule-column rule-buttons-wrap rule-text">
             <strong>Fiskeregler</strong>
             <div class="rule-buttons">
-              ${rules
-                .map((rule, i) => `
-                  <button 
-                    class="rule-btn"
-                    data-rule-type="${rule.type}"
-                    data-rule-text="${encodeURIComponent(rule.text)}"
-                  >
-                    Regel nr ${i + 1}
-                  </button>
-                `)
-                .join('')}
+            ${rules
+              .map((rule, i) => `
+                <button 
+                  class="rule-btn"
+                  data-rule-type="${rule.type}"
+                  data-rule-text="${encodeURIComponent(rule.text)}"
+                >
+                  Regel nr ${i + 1}
+                </button>
+              `)
+              .join('')}
             </div>
           </div>
 
@@ -68,6 +74,11 @@ export function displayFormattedFishingRegulations(
 
 // Function to attach event listeners to rule buttons
 function attachRuleButtonListeners() {
+  buttonClickListener();
+  buttonColorSelector();
+}
+
+function buttonClickListener (){
   document.querySelectorAll('.rule-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const el = e.currentTarget as HTMLButtonElement;
@@ -77,6 +88,22 @@ function attachRuleButtonListeners() {
 
       console.log('Klickade regel:', {text, type });
     });
+  });
+}
+
+function buttonColorSelector() {
+  const buttons = document.querySelectorAll('.rule-btn');
+  buttons.forEach((button) => {
+    const ruleType = button.getAttribute('data-rule-type');
+    if (ruleType === 'Förbud') {
+      button.classList.add('red-btn');
+    } else if (ruleType === 'Artbegränsning') {
+      button.classList.add('purple-btn');
+    } else if (ruleType === 'Redskapsbegränsning') {
+      button.classList.add('blue-btn');
+    } else {
+      button.classList.add('gray-btn');
+    }
   });
 }
 
