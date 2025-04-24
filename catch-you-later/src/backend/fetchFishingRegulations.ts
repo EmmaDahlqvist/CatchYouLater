@@ -119,8 +119,7 @@ async function fetchFishingRulesFromAPI(): Promise<FishingRule[]> {
     if (list.length < 20) {
       hasMore = false; // last page
     } else {
-      after = list.at(-1)?.ruleId ?? null;
-    }
+      after = list.length > 0 ? list[list.length - 1]?.ruleId ?? null : null;    }
   }
 
   saveFishingRulesToStorage(allRules);
