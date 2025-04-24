@@ -353,26 +353,26 @@ html, body {
 
 #general-rules {
   font-family: 'Inter', sans-serif;
-  font-size: 26px;
+  font-size: 24px;
   margin: 0 auto; 
   max-width: 90%; 
   line-height: 1.5; 
 }
 
 #general-rules li {
-  margin-bottom: 1.5rem; /* radmellanrum mellan varje li */
+  margin-bottom: 1.5rem;
 }
 
 #general-rules ul + ul {
-  margin-top: 2rem; /* Ensure spacing between consecutive ul elements */
+  margin-top: 2rem; 
 }
 
 .general-page .content-section h1,
 .map-page .content-section h1 {
   font-family: 'Lora', serif;
-  font-size: 2.5rem; /* Ändra storlek */
-  color: #222222; /* Ändra färg */
-  text-align: center; /* Centrera texten */
-  margin-top: 0; /* Ta bort eventuell extra marginal */
-  font-weight: 400; /* Gör texten normalvikt */
+  font-size: 2.5rem; 
+  color: #222222; 
+  text-align: center; 
+  margin-top: 0; 
+  font-weight: 400; 
 }
