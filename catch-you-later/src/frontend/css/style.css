@@ -326,6 +326,7 @@ html, body {
   color: #111;
   font-weight: 400;
   transition: 0.2s;
+  font-size: 1.2rem;
 }
 
 .nav-tabs a:hover {
@@ -340,8 +341,9 @@ html, body {
 .map-page .content-section {
   text-align: left;
   padding: 1.5rem;
-  max-width: 900px;
   align-items: flex-start;
+  margin-top: 0; 
+  padding-top: 0; 
 }
 
 .logo img {
@@ -349,3 +351,27 @@ html, body {
   width: auto;
 }
 
+#general-rules {
+  font-family: 'Inter', sans-serif;
+  font-size: 26px;
+  margin: 0 auto; 
+  max-width: 90%; 
+  line-height: 1.5; 
+}
+
+#general-rules li {
+  margin-bottom: 1.5rem; /* radmellanrum mellan varje li */
+}
+
+#general-rules ul + ul {
+  margin-top: 2rem; /* Ensure spacing between consecutive ul elements */
+}
+
+.general-page .content-section h1 {
+  font-family: 'Lora', serif;
+  font-size: 2.5rem; /* Ändra storlek */
+  color: #222222; /* Ändra färg */
+  text-align: center; /* Centrera texten */
+  margin-top: 0; /* Ta bort eventuell extra marginal */
+  font-weight: 400; /* Gör texten normalvikt */
+}
