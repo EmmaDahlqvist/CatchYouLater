@@ -34,54 +34,62 @@ export async function fetchGeographyById(geoId: string): Promise<any | null> {
 }
 
 export async function updatePolygons(map: L.Map, regulations: FormattedFishingRule[]): Promise<void> {
-    // Generate a new token for this operation
-    const token = Symbol();
-    currentToken = token;
+    const spinner = document.getElementById('loading-spinner');
+    if (spinner) spinner.style.display = 'flex';
 
-    if (drawnPolygons) {
-        map.removeLayer(drawnPolygons);
-    }
+    try {
+        // Generate a new token for this operation
+        const token = Symbol();
+        currentToken = token;
 
-    if (regulations.length === 0) {
-        console.log('No regulations to display on the map.');
-        return;
-    }
+        if (drawnPolygons) {
+            map.removeLayer(drawnPolygons);
+        }
 
-    drawnPolygons = L.layerGroup();
-
-    const locationIds = regulations.flatMap(regulation => regulation.location.map(loc => loc.id));
-    const uniqueLocationIds = Array.from(new Set(locationIds));
-
-    for (const locationId of uniqueLocationIds) {
-        // new call to updatePolygons?
-        if (currentToken !== token) {
-            console.log('Polygon drawing interrupted by a new updatePolygons call.');
+        if (regulations.length === 0) {
+            console.log('No regulations to display on the map.');
             return;
         }
 
-        const geography = await fetchGeographyById(locationId);
-        if (geography && geography.geometry && geography.geometry.coordinates) {
-            if (geography.geometry.type === 'MultiPolygon') {
-                geography.geometry.coordinates.forEach((polygon: any) => {
-                    polygon.forEach((ring: any) => {
+        drawnPolygons = L.layerGroup();
+
+        const locationIds = regulations.flatMap(regulation => regulation.location.map(loc => loc.id));
+        const uniqueLocationIds = Array.from(new Set(locationIds));
+
+        for (const locationId of uniqueLocationIds) {
+            if (currentToken !== token) {
+                console.log('Polygon drawing interrupted by a new updatePolygons call.');
+                return;
+            }
+
+            const geography = await fetchGeographyById(locationId);
+            if (geography && geography.geometry && geography.geometry.coordinates) {
+                if (geography.geometry.type === 'MultiPolygon') {
+                    geography.geometry.coordinates.forEach((polygon: any) => {
+                        polygon.forEach((ring: any) => {
+                            const coordinates: L.LatLngTuple[] = ring.map((coord: any) => [coord[1], coord[0]]);
+                            const leafletPolygon = L.polygon(coordinates, { color: 'blue' });
+                            leafletPolygon.bindPopup(`<b>${geography.geographyName || 'Unknown Location'}</b>`);
+                            drawnPolygons?.addLayer(leafletPolygon);
+                        });
+                    });
+                } else if (geography.geometry.type === 'Polygon') {
+                    geography.geometry.coordinates.forEach((ring: any) => {
                         const coordinates: L.LatLngTuple[] = ring.map((coord: any) => [coord[1], coord[0]]);
                         const leafletPolygon = L.polygon(coordinates, { color: 'blue' });
                         leafletPolygon.bindPopup(`<b>${geography.geographyName || 'Unknown Location'}</b>`);
                         drawnPolygons?.addLayer(leafletPolygon);
                     });
-                });
-            } else if (geography.geometry.type === 'Polygon') {
-                geography.geometry.coordinates.forEach((ring: any) => {
-                    const coordinates: L.LatLngTuple[] = ring.map((coord: any) => [coord[1], coord[0]]);
-                    const leafletPolygon = L.polygon(coordinates, { color: 'blue' });
-                    leafletPolygon.bindPopup(`<b>${geography.geographyName || 'Unknown Location'}</b>`);
-                    drawnPolygons?.addLayer(leafletPolygon);
-                });
+                }
             }
         }
-    }
 
-    drawnPolygons.addTo(map);
+        drawnPolygons.addTo(map);
+    } catch (error) {
+        console.error('Error updating polygons:', error);
+    } finally {
+        if (spinner) spinner.style.display = 'none';
+    }
 }
 
 async function fetchGeographies(limit: number = 20, after: string | null = null): Promise<any[]> {
