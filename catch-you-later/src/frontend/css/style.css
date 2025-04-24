@@ -18,8 +18,8 @@ html, body {
 }
 
 .map-section {
-  flex: 0 1 400px;
-  max-width: 400px;
+  flex: 0 1 450px;
+  max-width: 450px;
   min-width: 200px; 
 }
 
@@ -32,6 +32,8 @@ html, body {
   height: 100%;
   overflow: hidden;
   box-sizing: border-box;
+  transform: scale(0.9); 
+  transform-origin: center right;
 }
 
 .search-bar {
@@ -104,7 +106,6 @@ html, body {
 }
 
 
-
 .rule-row {
   display: flex;
   justify-content: space-between;
@@ -167,7 +168,9 @@ html, body {
 }
 
 .rule-btn:hover {
-  filter: brightness(1.1);
+  filter: brightness(1.13);
+  transform: scale(1.03); /* Liten förstoring */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.384); /* Liten skugga */
 }
 
 
@@ -198,7 +201,6 @@ html, body {
   flex: 1;
   overflow-y: auto;
   width: 100%;
-  margin: 5px;
   padding:10px;
   box-sizing: border-box;
 }
@@ -208,7 +210,7 @@ html, body {
   .scroll-area {
     scrollbar-width: auto;
     scrollbar-color: #007bff #e0e0e0;
-    margin-right: 20px;
+    margin-right: 10px;
   }
 }
 
