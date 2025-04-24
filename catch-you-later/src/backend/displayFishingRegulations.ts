@@ -1,5 +1,5 @@
 import type { FormattedFishingRule } from './fetchFishingRegulations';
-import { groupFormattedRulesBySpeciesAndLocation, removeGeneralRules } from './helpers';
+import { groupFormattedRulesBySpeciesAndLocation, removeGeneralRules, getGeneralRules } from './helpers';
 
 /**Display fishing rules as cards and rule buttons */
 export function displayFormattedFishingRegulations(
