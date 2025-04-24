@@ -18,61 +18,78 @@ export function displayFormattedFishingRegulations(
   // Group the rules by species and location
   const grouped = groupFormattedRulesBySpeciesAndLocation(filteredData);
 
-  
 
-  // Html
+
   container.innerHTML = [...grouped.entries()]
-    .map(([_, rules]) => {
-      const { species, location } = rules[0];
-      const speciesLabel = species.length > 0 ? species.join(', ') : 'Ingen specificerad';
-      const locationNames = location.length > 0
-        ? location.map(l => l.name).join(', ')
-        : 'Ingen specificerad';
+      .map(([_, rules]) => {
+        const { species, location } = rules[0];
 
-      return `
-        <div class="rule-card" location-ids="${location.map(l => l.id).join(',')}"> <!--för framtida bruk så ska man lätt kunna få id-->
- <div class="rule-row">
-        
+        // Process species names with exceptions
+        const processedSpecies = species
+            .flatMap(s => s.split('/')) // Split names with slashes into separate species
+            .flatMap(s => s.split(',').map(name => name.trim())) // Split by commas and trim
+            .map(s => {
+              const words = s.split(' ');
+              if (words.length > 1) {
+                words[1] = words[1].toLowerCase(); // Lowercase the second word
+              }
+              return words.join(' ');
+            });
+
+        const speciesLinks = processedSpecies.length > 0
+            ? processedSpecies
+                .map(s => {
+                  const baseName = s.replace(/\s*\(.*?\)/g, ''); // Remove parenthesis for the link
+                  const parenthesis = s.match(/\(.*?\)/)?.[0] || ''; // Extract parenthesis
+
+                  if (baseName.toLowerCase() === 'övrigt') {
+                    return `Övrigt`; // Display "Övrigt" as plain text
+                  }
+
+                  return `<a href="https://sv.wikipedia.org/wiki/${encodeURIComponent(baseName)}" target="_blank">${baseName}</a> ${parenthesis}`;
+                })
+                .join(', ')
+            : 'Ingen specificerad';
+
+        const locationNames = location.length > 0
+            ? location.map(l => l.name).join(', ')
+            : 'Ingen specificerad';
+
+        return `
+      <div class="rule-card" location-ids="${location.map(l => l.id).join(',')}">
+        <div class="rule-row">
           <div class="rule-column">
             <div><strong>Art</strong><br></div>
-            <div><a href="https://www.youtube.com/watch?v=xvFZjo5PgG0">${speciesLabel}</a></div>
+            <div>${speciesLinks}</div>
           </div>
-
           <div class="rule-column">
             <div><strong>Plats</strong></div>
             <div><p>${locationNames}</p></div>
           </div>
-
-          <div class="small-rule-column">
-          </div>
-
-
+          <div class="small-rule-column"></div>
           <div class="rule-column rule-buttons-wrap rule-text">
             <strong>Fiskeregler</strong>
             <div class="rule-buttons">
-            ${rules
-              .map((rule, i) => `
-                <button 
-                  class="rule-btn"
-                  data-rule-type="${rule.type}"
-                  data-rule-text="${encodeURIComponent(rule.text)}"
-                >
-                  Regel nr ${i + 1}
-                </button>
-              `)
-              .join('')}
+              ${rules
+            .map((rule, i) => `
+                  <button
+                    class="rule-btn"
+                    data-rule-type="${rule.type}"
+                    data-rule-text="${encodeURIComponent(rule.text)}"
+                  >
+                    Regel nr ${i + 1}
+                  </button>
+                `)
+            .join('')}
             </div>
           </div>
-
         </div>
-        </div>
-      `;
-    })
-    .join('');
+      </div>
+    `;
+      })
+      .join('');
 
-    attachRuleButtonListeners();
-}
-
+  attachRuleButtonListeners();
 /** Function to attach event listeners to rule buttons*/ 
 function attachRuleButtonListeners() {
   buttonClickListener();
@@ -108,6 +125,6 @@ function buttonColorSelector() {
       button.classList.add('gray-btn');
     }
   });
-}
+}}
 
 
