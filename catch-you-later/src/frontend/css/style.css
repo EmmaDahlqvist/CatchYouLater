@@ -242,7 +242,7 @@ html, body {
   height: 80px;
   text-align: center;
   font-style: italic;
-  font-size: 14px;
+  font-size: clamp(14px, 1.5vw, 18px); /* 👈 Responsiv font size */
   border-top: 1px solid #ccc;
   box-sizing: border-box;
   align-items: center;
