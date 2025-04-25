@@ -1,5 +1,6 @@
 import '../frontend/css/style.css';
 import { displayFormattedFishingRegulations } from './displayFishingRegulations.ts';
+import { displayGeneralRules } from './displayGeneralRegulations.ts';
 import { fetchAllFishingRegulations, getLatestFetchDate } from './fetchFishingRegulations.ts';
 import { setupSearchBar } from './searchHandler.ts';
 import { initializeMap } from './mapHandler.ts';
@@ -12,6 +13,9 @@ async function loadData() {
   // Display all regulations initially
   displayFormattedFishingRegulations(data, '#regulations');
 
+  // Display general rules
+  displayGeneralRules(data, '#general-rules');
+  
   // Initialize the map
   const map = await initializeMap();
 
@@ -31,7 +35,5 @@ async function updateLatestFetchDate() {
   }
 }
 
-
 updateLatestFetchDate();
-
 loadData();

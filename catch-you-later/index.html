@@ -2,12 +2,29 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/png" href="src/assets/fish.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/frontend/css/style.css" />
     <title>Catch You Later</title>
   </head>
   <body>
+    <div class="main-page">
+      <div class="navbar">
+        <div class="logo">
+          <a href="index.html">
+            <img src="src/assets/logo.png" alt="logo">
+          </a> 
+        </div>
+      
+        <div class="nav-tabs">
+          <a href="general.html">Allmänna Regler</a>
+          <a href="index.html" class="active">Sök Regler för Fiskart</a>
+          <a href="map.html">Karta</a>
+        </div>
+      
+        <div class="user-icon"></div>
+      </div>
     <div class="app-wrapper">
     <div class="map-section">
       <div id="map">
@@ -35,6 +52,7 @@
       <p>Datan är hämtad från Havs- och Vattennyndighetens API</p>
       <p>Hämtad senast <span id="latest-fetch-date">-</span></p>
     </div>
+  </div>
     <script type="module" src="/src/backend/main.ts"></script>
   </body>
 </html>
