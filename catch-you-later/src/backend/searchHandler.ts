@@ -1,10 +1,12 @@
 import type { FormattedFishingRule } from './fetchFishingRegulations.ts';
 import { displayFormattedFishingRegulations } from './displayFishingRegulations.ts';
+import { updatePolygons } from './mapHandler.ts';
 
 export function setupSearchBar(
   searchBarId: string,
   regulations: FormattedFishingRule[],
-  containerId: string
+  containerId: string,
+  map: L.Map
 ): void {
   const searchBar = document.getElementById(searchBarId) as HTMLInputElement;
 
@@ -13,34 +15,33 @@ export function setupSearchBar(
     return;
   }
 
-  searchBar.addEventListener('input', () => {
+  searchBar.addEventListener('input', async () => {
     const query = searchBar.value.toLocaleLowerCase();
 
-    if (!query) {
-      displayFormattedFishingRegulations(regulations, containerId);
-      return;
+    let filteredRegulations = regulations;
+
+    if (query) {
+      filteredRegulations = regulations.filter(regulation => {
+        const ruleTextWords: string[] = regulation.text.toLocaleLowerCase().match(/\p{L}+/gu) || [];
+        return (
+          regulation.species.some(specie =>
+            specie.toLowerCase().includes(query)
+          ) ||
+          regulation.location.some(location =>
+            location.name.toLowerCase().includes(query)
+          ) ||
+          ruleTextWords.includes(query) || 
+          regulation.type.toLowerCase().includes(query)
+        );
+      });
     }
 
-    const filterReg = regulations.filter(regulation => {
-      const ruleTextWords : string[] = regulation.text.toLocaleLowerCase().match(/\p{L}+/gu) || [];
-      return (
-        regulation.species.some(specie =>
-          specie.toLowerCase().includes(query)
-        ) ||
-        regulation.location.some(location =>
-          location.name.toLowerCase().includes(query)
-        ) ||
-        ruleTextWords.includes(query) || 
-        regulation.type.toLowerCase().includes(query) 
-      ); 
-    }
-      
-      
-    );
+    console.log('Filtered regulations:', filteredRegulations);
 
-    console.log('Filtered regulations:', filterReg);
-    
-    displayFormattedFishingRegulations(filterReg, containerId);
+    // Update the displayed regulations
+    displayFormattedFishingRegulations(filteredRegulations, containerId);
+
+    // Update the polygons on the map
+    await updatePolygons(map, filteredRegulations);
   });
-
 }

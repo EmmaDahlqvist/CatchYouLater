@@ -3,6 +3,8 @@ import { displayFormattedFishingRegulations } from './displayFishingRegulations.
 import { displayGeneralRules } from './displayGeneralRegulations.ts';
 import { fetchAllFishingRegulations, getLatestFetchDate } from './fetchFishingRegulations.ts';
 import { setupSearchBar } from './searchHandler.ts';
+import { initializeMap } from './mapHandler.ts';
+import { updatePolygons } from './mapHandler.ts';
 
 /** Loads the fishing regulation cards and searchbar */
 async function loadData() {
@@ -13,9 +15,15 @@ async function loadData() {
 
   // Display general rules
   displayGeneralRules(data, '#general-rules');
+  
+  // Initialize the map
+  const map = await initializeMap();
 
   // Set up the search bar functionality
-  setupSearchBar('searchBar', data, '#regulations');
+  setupSearchBar('searchBar', data, '#regulations', map);
+
+  await updatePolygons(map, data);
+
 }
 
 /** Updates the latest fetch date in the UI */

@@ -27,9 +27,12 @@
       </div>
     <div class="app-wrapper">
     <div class="map-section">
-      <p>karta här</p>
+      <div id="map">
+        <div id="loading-spinner" class="loading-spinner" style="display: none;">
+          <div class="spinner"></div>
+      </div>
     </div>
-
+    </div>
     <div class="content-section">
       <div class="search-bar">
         <input type="text" placeholder="Sök..." id="searchBar" />
@@ -38,15 +41,12 @@
           </svg>
           </span></button>
       </div>
-
         <div class="scroll-area">
           <div class="rules-list" id="regulations">
             <!-- Alla .rule-card genereras här -->
           </div>
         </div>
-      
       </div>
-
     </div>
     <div class="fixed-footer">
       <p>Datan är hämtad från Havs- och Vattennyndighetens API</p>
