@@ -8,6 +8,46 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Lora&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/src/frontend/css/style.css" />
+    <style>
+      /* Ensure the modal is centered and visible */
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1001; /* Above the overlay */
+        border-radius: 8px;
+        max-width: 90%;
+        width: 400px;
+      }
+
+      /* Style for the modal overlay */
+      .modal-overlay {
+        display: none; /* Hidden by default */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        z-index: 1000; /* Below the modal */
+      }
+
+      /* Close button styling */
+      .modal-close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+    </style>
   </head>
   <body class="general-page">
     <div class="page-layout">
@@ -28,10 +68,22 @@
           </div>
       <div class="main-scroll-area">
         <div class="content-section">
-          <h1>Allmänna Fiskeregler</h1>
+          <h1>Allmänna Fiskeregler
+            <button id="info-button" class="info-button" aria-label="Info">
+              ?
+            </button>
+          </h1>
           <div id="general-rules">
             <p>Information om allmänna regler kommer att visas här.</p>
           </div>
+        </div>
+      </div>
+      <div class="modal-overlay" id="info-modal-overlay"></div>
+      <div class="modal" id="info-modal">
+        <button class="modal-close-btn" id="info-modal-close">&times;</button>
+        <h2>Vad är en allmän regel?</h2>
+        <div class="modal-content">
+          <p>Allmänna regler är riktlinjer som gäller för alla fiskare och fiskeområden. Dessa regler är till för att skydda fiskbestånd och miljön.</p>
         </div>
       </div>
       <div class="fixed-footer">
@@ -40,5 +92,32 @@
       </div>
     </div>
     <script type="module" src="/src/backend/main.ts"></script>
+    <script>
+      const infoButton = document.getElementById('info-button');
+      const infoModal = document.getElementById('info-modal');
+      const infoModalOverlay = document.getElementById('info-modal-overlay');
+      const infoModalClose = document.getElementById('info-modal-close');
+
+      // Open modal when the info button is clicked
+      infoButton.addEventListener('click', () => {
+        infoModal.style.display = 'block';
+        infoModalOverlay.style.display = 'block';
+        infoModal.classList.add('modal-active'); // Ensure modal is visible
+      });
+
+      // Close modal when the close button is clicked
+      infoModalClose.addEventListener('click', () => {
+        infoModal.style.display = 'none';
+        infoModalOverlay.style.display = 'none';
+        infoModal.classList.remove('modal-active'); // Remove active class
+      });
+
+      // Close modal when the overlay is clicked
+      infoModalOverlay.addEventListener('click', () => {
+        infoModal.style.display = 'none';
+        infoModalOverlay.style.display = 'none';
+        infoModal.classList.remove('modal-active'); // Remove active class
+      });
+    </script>
   </body>
 </html>
