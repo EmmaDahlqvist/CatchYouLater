@@ -225,7 +225,6 @@ async function fetchAllGeographies(): Promise<Map<string, { name: string; geomet
     after = list.at(-1)?.geographyId ?? null;
   }
 
-  console.log('Fetched geographies:', [...geoMap.entries()]);
   saveGeoCacheToStorage(geoMap);
 
   return geoMap;
