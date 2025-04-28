@@ -59,8 +59,9 @@ const typeLabels: Record<string, string> = {
 /** A function to fetch all fishing regulations in a list of formatted rules*/
 export async function fetchAllFishingRegulations(): Promise<FormattedFishingRule[]> {
   const rules = await fetchRegulationsFromAPIorStorage();
-  // ändra på specieList o ta rules :)
-  let specieList: string[] = ['Torsk', 'Lax', 'Öring', "Hummer"] 
+
+  const specieList = extractUniqueSpecies(rules); // Get all unique species from the rules
+  //specieList.push("musslor", "skarpsill")
   const formattedRules = await formatRules(rules, specieList);
   return formattedRules;
 }
@@ -299,4 +300,17 @@ function loadFishingRulesFromStorage() {
   }
 
   return null;
+}
+
+function extractUniqueSpecies(rules: FishingRule[]): string[] {
+  const speciesSet = new Set<string>();
+
+  for (const rule of rules) {
+    const speciesArray = rule.gearTypeRestriction?.species ?? [];
+    for (const species of speciesArray) {
+      speciesSet.add(species.speciesNameSwedish);
+    }
+  }
+
+  return Array.from(speciesSet).sort(); // sort() för snyggare lista :)
 }
