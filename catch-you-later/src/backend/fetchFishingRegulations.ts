@@ -35,7 +35,7 @@ export type FormattedFishingRule = {
   type: string;
   startsAt: string;
   gear: string;
-  targetGroup: string;
+  targetGroup: string[];
 };
 
 /**To translate the target groups to swedish*/
@@ -165,9 +165,7 @@ async function formatRules(rules: FishingRule[]): Promise<FormattedFishingRule[]
               )
               .join(', ')
             : 'Inga specifika redskap',
-          targetGroup: rule.targetGroups
-            ?.map(group => targetGroupLabels[group] ?? group) 
-            .join(', ') ?? '---',
+          targetGroup: rule.targetGroups || []
       };
     })
   );
