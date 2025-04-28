@@ -52,7 +52,20 @@
       <p>Datan är hämtad från Havs- och Vattennyndighetens API</p>
       <p>Hämtad senast <span id="latest-fetch-date">-</span></p>
     </div>
-  </div>
+
+    <!-- Modal Structure -->
+    <div id="modalOverlay" class="modal-overlay"></div>
+    <div id="ruleModal" class="modal">
+      <button class="modal-close-btn">&times;</button>
+      <h2 id="modalTitle">Regel Detaljer</h2>
+      <div class="modal-content">
+        <p><strong>Typ:</strong> <span class="modal-type-indicator"></span><span id="modalRuleType"></span></p>
+        <p><strong>Beskrivning:</strong></p>
+        <p id="modalRuleDescription"></p>
+      </div>
+    </div>
+    <!-- End Modal Structure -->
+
     <script type="module" src="/src/backend/main.ts"></script>
   </body>
 </html>
