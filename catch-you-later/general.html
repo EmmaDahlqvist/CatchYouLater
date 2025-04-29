@@ -8,46 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Lora&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/src/frontend/css/style.css" />
-    <style>
-      /* Ensure the modal is centered and visible */
-      .modal {
-        display: none; /* Hidden by default */
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: white;
-        padding: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        z-index: 1001; /* Above the overlay */
-        border-radius: 8px;
-        max-width: 90%;
-        width: 400px;
-      }
-
-      /* Style for the modal overlay */
-      .modal-overlay {
-        display: none; /* Hidden by default */
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-        z-index: 1000; /* Below the modal */
-      }
-
-      /* Close button styling */
-      .modal-close-btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-      }
-    </style>
   </head>
   <body class="general-page">
     <div class="page-layout">
@@ -72,7 +32,7 @@
           <h1>Allmänna Fiskeregler
             <button id="info-button" class="info-button tooltip" aria-label="Info">
               ?
-              <span class="tooltiptext">Allmänna regler?</span>
+              <span class="tooltiptext">Info om Allmänna Fiskeregler</span>
             </button>
           </h1>
           <div id="general-rules">
@@ -90,7 +50,7 @@
     <div id="modal-overlay" class="modal-overlay"></div>
     <div id="modal" class="modal">
       <button id="modal-close-btn" class="modal-close-btn" aria-label="Close">&times;</button>
-      <h2>Info om allmänna fiskeregler</h2>
+      <h2>Info om Allmänna Fiskeregler</h2>
       <p>Allmänna fiskeregler gäller vid allt fiske i Sverige, både fritidsfiske och yrkesfiske. Reglerna omfattar alla fiskarter och syftar till att bevara fiskbestånden och främja ett hållbart fiske. Reglerna styr t.ex. återutsättning av fisk som inte håller måttkrav, krav på redskapsutformning och förbjudet fiske av hotade arter.
         Läs mer hos Havs- och vattenmyndigheten för fullständig information.</p>
     </div>

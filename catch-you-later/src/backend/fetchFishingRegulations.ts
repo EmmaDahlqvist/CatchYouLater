@@ -39,10 +39,10 @@ export type FormattedFishingRule = {
 };
 
 /**To translate the target groups to swedish*/
-const targetGroupLabels: Record<string, string> = {
-  RECREATIONAL: 'Fritidsfiske',
-  COMMERCIAL: 'Kommersiellt fiske'
-}
+// const targetGroupLabels: Record<string, string> = {
+//   RECREATIONAL: 'Fritidsfiske',
+//   COMMERCIAL: 'Kommersiellt fiske'
+// }
 
 /**To translate the type labels to swedish*/
 const typeLabels: Record<string, string> = {
