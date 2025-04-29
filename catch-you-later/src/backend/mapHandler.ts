@@ -39,6 +39,9 @@ export async function updatePolygons(map: L.Map, regulations: FormattedFishingRu
         const token = Symbol();
         currentToken = token;
 
+        // Wait for potential searchbar updates (causes lag otherwise)
+        await new Promise(resolve => setTimeout(resolve, 500));
+
         if (drawnPolygons) {
             map.removeLayer(drawnPolygons);
         }
