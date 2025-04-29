@@ -514,12 +514,13 @@ html, body {
   font-size: 14px;
   line-height: 1.4;
   z-index: 1000;
-  max-width: 250px;
+  max-width: 300px; /* Increase this value to make the tooltip wider */
+  white-space: nowrap; /* Ensure text wraps if necessary */
   pointer-events: none;
   transition: opacity 0.2s ease;
   visibility: hidden;
-  top: 120%; /* Move further down */
-  left: 20%; /* Move further to the right */
+  top: 120%;
+  left: 20%;
 }
 
 
