@@ -24,7 +24,7 @@ export function groupFormattedRulesBySpeciesAndLocation(
 
 /** Filter out the general rules from the data, i.e ones with type "Allmän regel"*/
 export function removeGeneralRules(data: FormattedFishingRule[]): FormattedFishingRule[] {
-  return data.filter(rule => rule.type !== 'Allmän regel');
+  return data.filter(rule => rule.type !== 'Allmän regel' &&  !rule.targetGroup.includes('OTHER'));
 }
 
 /** gives the rules with type "Allmän regel"*/
