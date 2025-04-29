@@ -73,9 +73,9 @@ export async function fetchAllFishingRegulations(): Promise<FormattedFishingRule
   const rules = await fetchRegulationsFromAPIorStorage();
 
   const specieSet = extractUniqueSpecies(rules); // Get all unique species from the rules
-  const manualAdd = ["musslor", "skarpsill"]
+  const manualAdd = ["Musslor", "Skarpsill"]
   for (const specie of manualAdd){
-    if (specieSet.has(specie)){
+    if (!specieSet.has(specie)){
       specieSet.add(specie)
     }
   }
