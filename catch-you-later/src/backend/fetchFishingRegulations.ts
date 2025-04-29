@@ -60,9 +60,14 @@ const typeLabels: Record<string, string> = {
 export async function fetchAllFishingRegulations(): Promise<FormattedFishingRule[]> {
   const rules = await fetchRegulationsFromAPIorStorage();
 
-  const specieList = extractUniqueSpecies(rules); // Get all unique species from the rules
-  //specieList.push("musslor", "skarpsill")
-  const formattedRules = await formatRules(rules, specieList);
+  const specieSet = extractUniqueSpecies(rules); // Get all unique species from the rules
+  const manualAdd = ["musslor", "skarpsill"]
+  for (const specie of manualAdd){
+    if (specieSet.has(specie)){
+      specieSet.add(specie)
+    }
+  }
+  const formattedRules = await formatRules(rules, specieSet);
   return formattedRules;
 }
 
@@ -129,7 +134,7 @@ async function fetchFishingRulesFromAPI(): Promise<FishingRule[]> {
 
 
 /** A function to format the fishing rules into a more readable format */
-async function formatRules(rules: FishingRule[], specieList : string[]): Promise<FormattedFishingRule[]> {
+async function formatRules(rules: FishingRule[], specieSet : Set<string>): Promise<FormattedFishingRule[]> {
   let geoMap = await fetchAllGeographies();
 
   // Format the rules into a more readable format
@@ -143,11 +148,11 @@ async function formatRules(rules: FishingRule[], specieList : string[]): Promise
 
       // If no species, check in the ruleText
       if(species.length === 0 && rule.ruleText) {
-        const ignoredSpecies = getIgnoredSpecies(rule.ruleText, specieList)
+        const ignoredSpecies = getIgnoredSpecies(rule.ruleText, specieSet)
         console.log("ignorerade:", ignoredSpecies)
         console.log("rule", rule.ruleText)
 
-        for(const specie of specieList) {
+        for(const specie of specieSet) {
           if(rule.ruleText.toLowerCase().includes(specie.toLowerCase()) && 
           !ignoredSpecies.includes(specie)) {
             species.push(specie)
@@ -186,7 +191,7 @@ async function formatRules(rules: FishingRule[], specieList : string[]): Promise
 }
 
 /**Ignore species after "än" in ruleText */
-function getIgnoredSpecies(ruleText: string, knownSpecies: string[]) {
+function getIgnoredSpecies(ruleText: string, knownSpecies: Set<string>) {
   const text = ruleText.toLowerCase();
   const ignoredSpecies: string[] = [];
 
@@ -302,15 +307,18 @@ function loadFishingRulesFromStorage() {
   return null;
 }
 
-function extractUniqueSpecies(rules: FishingRule[]): string[] {
+function extractUniqueSpecies(rules: FishingRule[]): Set<string> {
   const speciesSet = new Set<string>();
 
   for (const rule of rules) {
     const speciesArray = rule.gearTypeRestriction?.species ?? [];
     for (const species of speciesArray) {
-      speciesSet.add(species.speciesNameSwedish);
+      const names = species.speciesNameSwedish.split('/');
+      for (const name of names) {
+        speciesSet.add(name.trim());
+      }
     }
   }
 
-  return Array.from(speciesSet).sort(); // sort() för snyggare lista :)
+  return speciesSet;
 }
