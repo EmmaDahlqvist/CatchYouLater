@@ -1,4 +1,4 @@
-
+import LZString from 'lz-string';
 
 type GearType = string | {
   gearName?: string;
@@ -26,19 +26,31 @@ type FishingRule = {
   };
 };
 
-/** A type for the formatted fishing rules, easier to read/work with*/
+/** A type for the formatted fishing rules, easier to read/work with */
 export type FormattedFishingRule = {
   species: string[];
   text: string;
   location: {
     name: string;
     id: string;
+    geography: {
+      geometry: {
+        type: string;
+        coordinates: any[];
+      };
+    };
   }[];
   type: string;
   startsAt: string;
   gear: string;
   targetGroup: string[];
 };
+
+/**To translate the target groups to swedish*/
+const targetGroupLabels: Record<string, string> = {
+  RECREATIONAL: 'Fritidsfiske',
+  COMMERCIAL: 'Kommersiellt fiske'
+}
 
 /**To translate the type labels to swedish*/
 const typeLabels: Record<string, string> = {
@@ -164,9 +176,17 @@ async function formatRules(rules: FishingRule[], specieSet : Set<string>): Promi
       const location = (rule.geographies ?? [])
         .map(id => {
           const geo = geoMap.get(id);
-          return geo ? { name: geo, id: id} : null;
+          return geo
+            ? {
+                name: geo.name,
+                id: id,
+                geography: {
+                  geometry: geo.geometry,
+                },
+              }
+            : null;
         })
-        .filter((loc): loc is { name: string; id: string } => loc !== null);
+        .filter((loc): loc is { name: string; id: string; geography: { geometry: { type: string; coordinates: any[] } } } => loc !== null);
 
       return {
         species: species,
@@ -184,7 +204,7 @@ async function formatRules(rules: FishingRule[], specieSet : Set<string>): Promi
               )
               .join(', ')
             : 'Inga specifika redskap',
-          targetGroup: rule.targetGroups || []
+        targetGroup: rule.targetGroups || []
       };
     })
   );
@@ -211,15 +231,15 @@ function getIgnoredSpecies(ruleText: string, knownSpecies: Set<string>) {
 }
 
 
-/**A function to fetch all geographies, cached or from API */
-async function fetchAllGeographies(): Promise<Map<string, string>> {
+/** A function to fetch all geographies, cached or from API */
+async function fetchAllGeographies(): Promise<Map<string, { name: string; geometry: { type: string; coordinates: any[] } }>> {
   const cached = loadGeoCacheFromStorage();
   if (cached.size > 0) {
     console.log('Get geographies from cache...');
-    return loadGeoCacheFromStorage();
+    return cached;
   }
 
-  const geoMap = new Map<string, string>();
+  const geoMap = new Map<string, { name: string; geometry: { type: string; coordinates: any[] } }>();
   let after: string | null = null;
   let hasMore = true;
 
@@ -235,7 +255,14 @@ async function fetchAllGeographies(): Promise<Map<string, string>> {
     const list = data.list ?? [];
 
     for (const geo of list) {
-      geoMap.set(geo.geographyId, geo.geographyName);
+      if (geo.geographyId && geo.geographyName && geo.geometry) {
+        geoMap.set(geo.geographyId, {
+          name: geo.geographyName,
+          geometry: geo.geometry,
+        });
+      } else {
+        console.warn('Invalid geography data:', geo);
+      }
     }
 
     hasMore = list.length > 0;
@@ -250,31 +277,35 @@ async function fetchAllGeographies(): Promise<Map<string, string>> {
 // How long to keep the cache in localStorage (in milliseconds)
 const maxCacheAge = 1000 * 60 * 60 * 72; // 72h
 
-/** A function to load geoMap cache from localstorage, geo id and name */
-function loadGeoCacheFromStorage(): Map<string, string> {
-  const cached = localStorage.getItem('geoMap');
+/** A function to load geoMap cache from localStorage with decompression */
+function loadGeoCacheFromStorage(): Map<string, { name: string; geometry: { type: string; coordinates: any[] } }> {
+  const compressed = localStorage.getItem('geoMap');
   const timestamp = localStorage.getItem('geoMap:timestamp');
+  const isFresh = compressed && timestamp && Date.now() - Number(timestamp) < maxCacheAge;
 
-  const isFresh = cached && timestamp && Date.now() - Number(timestamp) < maxCacheAge;
-
-  // Check if we have a cached version and if it's still fresh
   if (isFresh) {
     try {
-      const entries: [string, string][] = JSON.parse(cached);
-      return new Map(entries);
-    } catch {
-      console.warn('Could not read geoMap cache.');
+      const jsonString = LZString.decompress(compressed);
+      if (jsonString) {
+        const entries: [string, { name: string; geometry: { type: string; coordinates: any[] } }][] = JSON.parse(jsonString);
+        return new Map(entries);
+      }
+    } catch (err) {
+      console.warn('Could not decompress geoMap cache:', err);
     }
   }
 
   return new Map();
 }
 
-/** A function to save geoMap cache to localstorage, geo id and name */
-function saveGeoCacheToStorage(map: Map<string, string>) {
+/** A function to save geoMap cache to localStorage with compression */
+function saveGeoCacheToStorage(map: Map<string, { name: string; geometry: { type: string; coordinates: any[] } }>) {
   const entries = [...map.entries()];
-  localStorage.setItem('geoMap', JSON.stringify(entries));
+  const jsonString = JSON.stringify(entries);
+  const compressed = LZString.compress(jsonString);
+  localStorage.setItem('geoMap', compressed);
   localStorage.setItem('geoMap:timestamp', String(Date.now()));
+  console.log('Compressed and saved geoMap to cache.');
 }
 
 /** A function to save fishing rules to localStorage */
@@ -321,4 +352,49 @@ function extractUniqueSpecies(rules: FishingRule[]): Set<string> {
   }
 
   return speciesSet;
+}
+
+/* A type for the filter criteria */
+export type RegulationFilter = {
+  [K in keyof FormattedFishingRule]?: FormattedFishingRule[K];
+};
+
+/* A function to filter fishing regulations based on specified criteria */
+export function filterRegulations(
+  regulations: FormattedFishingRule[],
+  filters: RegulationFilter
+): FormattedFishingRule[] {
+  return regulations.filter(regulation => {
+    // Iterate over each key in the filters object
+    for (const key in filters) {
+      // Check if the filter key is a valid key of FishingRegulation
+      if (Object.prototype.hasOwnProperty.call(filters, key) && key in regulation) {
+        // Type assertion to help TypeScript understand the key
+        const filterKey = key as keyof FormattedFishingRule;
+        const filterValue = filters[filterKey];
+        const regulationValue = regulation[filterKey];
+
+
+        if (typeof regulationValue === 'string' && typeof filterValue === 'string') {
+          if (regulationValue.toLowerCase() !== filterValue.toLowerCase()) {
+            return false;
+          }
+        } else {
+          // If not both strings, perform a standard comparison
+          // Handles null comparison correctly (filterValue === null means we want regulations where the value is null)
+          if (regulationValue !== filterValue) {
+            return false; // Doesn't match this filter criterion
+          }
+        }
+      } else {
+        // Optionally handle cases where the filter key isn't part of FishingRegulation,
+        // though the RegulationFilter type should largely prevent this.
+        // console.warn(`Filter key \"${key}\" is not a valid attribute of FishingRegulation.`);
+        // Depending on desired behavior, you might want to return false or ignore the invalid key.
+        // For now, we'll ignore invalid keys.
+      }
+    }
+    // If the regulation passed all filter checks, include it
+    return true;
+  });
 }

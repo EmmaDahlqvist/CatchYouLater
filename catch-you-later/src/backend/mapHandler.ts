@@ -34,13 +34,13 @@ export async function fetchGeographyById(geoId: string): Promise<any | null> {
 }
 
 export async function updatePolygons(map: L.Map, regulations: FormattedFishingRule[]): Promise<void> {
-    const spinner = document.getElementById('loading-spinner');
-    if (spinner) spinner.style.display = 'flex';
-
     try {
         // Generate a new token for this operation
         const token = Symbol();
         currentToken = token;
+
+        // Wait for potential searchbar updates (causes lag otherwise)
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         if (drawnPolygons) {
             map.removeLayer(drawnPolygons);
@@ -53,33 +53,42 @@ export async function updatePolygons(map: L.Map, regulations: FormattedFishingRu
 
         drawnPolygons = L.layerGroup();
 
-        const locationIds = regulations.flatMap(regulation => regulation.location.map(loc => loc.id));
-        const uniqueLocationIds = Array.from(new Set(locationIds));
+        // Use a Set to track processed location IDs
+        const processedLocations = new Set<string>();
 
-        for (const locationId of uniqueLocationIds) {
-            if (currentToken !== token) {
-                console.log('Polygon drawing interrupted by a new updatePolygons call.');
-                return;
-            }
+        for (const regulation of regulations) {
+            for (const location of regulation.location) {
+                if (currentToken !== token) {
+                    console.log('Polygon drawing interrupted by a new updatePolygons call.');
+                    return;
+                }
 
-            const geography = await fetchGeographyById(locationId);
-            if (geography && geography.geometry && geography.geometry.coordinates) {
-                if (geography.geometry.type === 'MultiPolygon') {
-                    geography.geometry.coordinates.forEach((polygon: any) => {
-                        polygon.forEach((ring: any) => {
+                // Skip if this location has already been processed
+                if (processedLocations.has(location.id)) {
+                    continue;
+                }
+
+                processedLocations.add(location.id);
+
+                const geography = location.geography;
+                if (geography && geography.geometry && geography.geometry.coordinates) {
+                    if (geography.geometry.type === 'MultiPolygon') {
+                        geography.geometry.coordinates.forEach((polygon: any) => {
+                            polygon.forEach((ring: any) => {
+                                const coordinates: L.LatLngTuple[] = ring.map((coord: any) => [coord[1], coord[0]]);
+                                const leafletPolygon = L.polygon(coordinates, { color: 'blue' });
+                                leafletPolygon.bindPopup(`<b>${location.name || 'Unknown Location'}</b>`);
+                                drawnPolygons?.addLayer(leafletPolygon);
+                            });
+                        });
+                    } else if (geography.geometry.type === 'Polygon') {
+                        geography.geometry.coordinates.forEach((ring: any) => {
                             const coordinates: L.LatLngTuple[] = ring.map((coord: any) => [coord[1], coord[0]]);
                             const leafletPolygon = L.polygon(coordinates, { color: 'blue' });
-                            leafletPolygon.bindPopup(`<b>${geography.geographyName || 'Unknown Location'}</b>`);
+                            leafletPolygon.bindPopup(`<b>${location.name || 'Unknown Location'}</b>`);
                             drawnPolygons?.addLayer(leafletPolygon);
                         });
-                    });
-                } else if (geography.geometry.type === 'Polygon') {
-                    geography.geometry.coordinates.forEach((ring: any) => {
-                        const coordinates: L.LatLngTuple[] = ring.map((coord: any) => [coord[1], coord[0]]);
-                        const leafletPolygon = L.polygon(coordinates, { color: 'blue' });
-                        leafletPolygon.bindPopup(`<b>${geography.geographyName || 'Unknown Location'}</b>`);
-                        drawnPolygons?.addLayer(leafletPolygon);
-                    });
+                    }
                 }
             }
         }
@@ -87,7 +96,5 @@ export async function updatePolygons(map: L.Map, regulations: FormattedFishingRu
         drawnPolygons.addTo(map);
     } catch (error) {
         console.error('Error updating polygons:', error);
-    } finally {
-        if (spinner) spinner.style.display = 'none';
     }
 }

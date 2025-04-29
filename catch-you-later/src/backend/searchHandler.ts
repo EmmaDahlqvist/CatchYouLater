@@ -34,8 +34,6 @@ export function setupSearchBar(
       });
     }
 
-    console.log('Filtered regulations:', filteredRegulations);
-
     // Update the displayed regulations
     displayFormattedFishingRegulations(filteredRegulations, containerId);
 
