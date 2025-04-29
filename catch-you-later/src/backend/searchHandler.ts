@@ -22,7 +22,6 @@ export function setupSearchBar(
 
     if (query) {
       filteredRegulations = regulations.filter(regulation => {
-        const ruleTextWords: string[] = regulation.text.toLocaleLowerCase().match(/\p{L}+/gu) || [];
         return (
           regulation.species.some(specie =>
             specie.toLowerCase().includes(query)
@@ -30,8 +29,7 @@ export function setupSearchBar(
           regulation.location.some(location =>
             location.name.toLowerCase().includes(query)
           ) ||
-          ruleTextWords.includes(query) || 
-          regulation.type.toLowerCase().includes(query)
+          regulation.text.toLocaleLowerCase().includes(query)
         );
       });
     }
