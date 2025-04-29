@@ -1,30 +1,30 @@
 ﻿document.addEventListener('DOMContentLoaded', () => {
     const infoButton = document.getElementById('info-button');
-    const modal = document.getElementById('modal');
-    const modalOverlay = document.getElementById('modal-overlay');
-    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const modalinfo = document.getElementById('modalinfo');
+    const modalinfoOverlay = document.getElementById('modalinfo-overlay');
+    const modalinfoCloseBtn = document.getElementById('modalinfo-close-btn');
 
-    // Show modal
+    // Show modalinfo
     infoButton?.addEventListener('click', () => {
-        if (modal && modalOverlay) {
-            modal.style.display = 'block';
-            modalOverlay.style.display = 'block';
+        if (modalinfo && modalinfoOverlay) {
+            modalinfo.style.display = 'block';
+            modalinfoOverlay.style.display = 'block';
         }
     });
 
-    // Hide modal
-    modalCloseBtn?.addEventListener('click', () => {
-        if (modal && modalOverlay) {
-            modal.style.display = 'none';
-            modalOverlay.style.display = 'none';
+    // Hide modalinfo
+    modalinfoCloseBtn?.addEventListener('click', () => {
+        if (modalinfo && modalinfoOverlay) {
+            modalinfo.style.display = 'none';
+            modalinfoOverlay.style.display = 'none';
         }
     });
 
-    // Hide modal when clicking outside of it
-    modalOverlay?.addEventListener('click', () => {
-        if (modal && modalOverlay) {
-            modal.style.display = 'none';
-            modalOverlay.style.display = 'none';
+    // Hide modalinfo when clicking outside of it
+    modalinfoOverlay?.addEventListener('click', () => {
+        if (modalinfo && modalinfoOverlay) {
+            modalinfo.style.display = 'none';
+            modalinfoOverlay.style.display = 'none';
         }
     });
 });
