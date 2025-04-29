@@ -39,10 +39,10 @@ export type FormattedFishingRule = {
 };
 
 /**To translate the target groups to swedish*/
-// const targetGroupLabels: Record<string, string> = {
-//   RECREATIONAL: 'Fritidsfiske',
-//   COMMERCIAL: 'Kommersiellt fiske'
-// }
+const targetGroupLabels: Record<string, string> = {
+  RECREATIONAL: 'Fritidsfiske',
+  COMMERCIAL: 'Kommersiellt fiske'
+}
 
 /**To translate the type labels to swedish*/
 const typeLabels: Record<string, string> = {
@@ -63,7 +63,9 @@ const typeLabels: Record<string, string> = {
 /** A function to fetch all fishing regulations in a list of formatted rules*/
 export async function fetchAllFishingRegulations(): Promise<FormattedFishingRule[]> {
   const rules = await fetchRegulationsFromAPIorStorage();
-  const formattedRules = await formatRules(rules);
+  // ändra på specieList o ta rules :)
+  let specieList: string[] = ['Torsk', 'Lax', 'Öring', "Hummer"]
+  const formattedRules = await formatRules(rules, specieList);
   return formattedRules;
 }
 
@@ -130,7 +132,7 @@ async function fetchFishingRulesFromAPI(): Promise<FishingRule[]> {
 
 
 /** A function to format the fishing rules into a more readable format */
-async function formatRules(rules: FishingRule[]): Promise<FormattedFishingRule[]> {
+async function formatRules(rules: FishingRule[], specieList : string[]): Promise<FormattedFishingRule[]> {
   let geoMap = await fetchAllGeographies();
 
   // Format the rules into a more readable format
@@ -141,6 +143,21 @@ async function formatRules(rules: FishingRule[]): Promise<FormattedFishingRule[]
           ? `${s.speciesNameSwedish} (${s.speciesSubcategory})`
           : s.speciesNameSwedish
       ) ?? [];
+
+      // If no species, check in the ruleText
+      if(species.length === 0 && rule.ruleText) {
+        const ignoredSpecies = getIgnoredSpecies(rule.ruleText, specieList)
+        console.log("ignorerade:", ignoredSpecies)
+        console.log("rule", rule.ruleText)
+
+        for(const specie of specieList) {
+          if(rule.ruleText.toLowerCase().includes(specie.toLowerCase()) &&
+          !ignoredSpecies.includes(specie)) {
+            species.push(specie)
+          }
+        }
+      }
+
 
       const location = (rule.geographies ?? [])
         .map(id => {
@@ -170,6 +187,27 @@ async function formatRules(rules: FishingRule[]): Promise<FormattedFishingRule[]
     })
   );
 }
+
+/**Ignore species after "än" in ruleText */
+function getIgnoredSpecies(ruleText: string, knownSpecies: string[]) {
+  const text = ruleText.toLowerCase();
+  const ignoredSpecies: string[] = [];
+
+  const afterThanMatch = text.split('än')[1]; // text after "än"
+  if (!afterThanMatch) return ignoredSpecies;
+
+  // take words until "."
+  const possibleSpeciesList = afterThanMatch.split(/[.]/)[0];
+
+  for (const specie of knownSpecies) {
+    if (possibleSpeciesList.includes(specie.toLowerCase())) {
+      ignoredSpecies.push(specie);
+    }
+  }
+
+  return ignoredSpecies;
+}
+
 
 /**A function to fetch all geographies, cached or from API */
 async function fetchAllGeographies(): Promise<Map<string, string>> {
