@@ -237,8 +237,9 @@ const maxCacheAge = 1000 * 60 * 60 * 72; // 72h
 function loadGeoCacheFromStorage(): Map<string, { name: string; geometry: { type: string; coordinates: any[] } }> {
   const compressed = localStorage.getItem('geoMap');
   const timestamp = localStorage.getItem('geoMap:timestamp');
+  const isFresh = compressed && timestamp && Date.now() - Number(timestamp) < maxCacheAge;
 
-  if (compressed && timestamp) {
+  if (isFresh) {
     try {
       const jsonString = LZString.decompress(compressed);
       if (jsonString) {
