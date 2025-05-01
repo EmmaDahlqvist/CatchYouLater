@@ -2,6 +2,11 @@ body {
   background-color: #F4F4F4;
 }
 
+.scale-content {
+  transform: scale(0.9);
+  transform-origin: center right;
+}
+
 html, body {
   margin: 0;
   padding: 0;
