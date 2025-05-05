@@ -2,6 +2,11 @@ body {
   background-color: #F4F4F4;
 }
 
+.scale-content {
+  transform: scale(0.9);
+  transform-origin: center right;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -37,8 +42,6 @@ html, body {
   height: 100%;
   overflow: hidden;
   box-sizing: border-box;
-  transform: scale(0.9); 
-  transform-origin: center right;
 }
 
 .search-bar {
@@ -659,3 +662,26 @@ html, body {
 }
 
 /* --- End Modal Styles --- */
+
+/* Styles for the map container on map.html */
+
+/* Styles for the main content area */
+
+/* Map Page Specific Styles */
+.map-page .content-section h1 {
+  width: 85%; /* Match map width */
+  text-align: left;
+  margin-left: auto; /* Center the h1 block */
+  margin-right: auto; /* Center the h1 block */
+  margin-bottom: 0.5rem; /* Space below title */
+  margin-top: 3rem; /* Increased top margin */
+}
+
+#map-names {
+  height: 80vh; /* Or adjust as needed */
+  width: 85%; /* Decreased width */
+  border: 1px solid #ccc; /* Optional: adds a border */
+  margin-top: 1rem; /* Optional: adds some space above the map */
+  margin-left: auto; /* Center horizontally */
+  margin-right: auto; /* Center horizontally */
+}
