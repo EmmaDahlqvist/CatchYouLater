@@ -45,7 +45,7 @@ export function displayFormattedFishingRegulations(
                     return `Övrigt`; // Display "Övrigt" as plain text
                   }
 
-                  return `<a href="https://sv.wikipedia.org/wiki/${encodeURIComponent(baseName)}" target="_blank">${baseName}</a> ${parenthesis}`;
+                  return `<a href="https://sv.wikipedia.org/wiki/${encodeURIComponent(baseName)}" target="_blank">${baseName}</a>${parenthesis ? ' ' + parenthesis : ''}`;
                 })
                 .join(', ')
             : 'Ingen specificerad';
@@ -58,7 +58,7 @@ export function displayFormattedFishingRegulations(
        location-ids="${location.map(l => l.id).join(',')}">
         <div class="rule-row">
           <div class="rule-column">
-            <div><strong>Art</strong><br></div>
+            <div><strong>${speciesLinks.includes(',') ? 'Arter' : 'Art'}</strong><br></div>
             <div>${speciesLinks}</div>
           </div>
           <div class="rule-column">
