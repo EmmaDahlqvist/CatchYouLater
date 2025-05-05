@@ -1,6 +1,6 @@
-import type { FormattedFishingRule } from './fetchFishingRegulations.ts';
-import { displayFormattedFishingRegulations } from './displayFishingRegulations.ts';
-import { updatePolygons } from './mapHandler.ts';
+import type { FormattedFishingRule } from './fetch-fishing-regulations.ts';
+import { displayFormattedFishingRegulations } from './display-fishing-regulations.ts';
+import { updatePolygons } from './map-handler.ts';
 
 export function setupSearchBar(
   searchBarId: string,

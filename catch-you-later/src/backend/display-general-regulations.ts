@@ -1,5 +1,5 @@
 import { getGeneralRules } from './helpers';
-import type { FormattedFishingRule } from './fetchFishingRegulations';
+import type { FormattedFishingRule } from './fetch-fishing-regulations.ts';
 
 /** Function to display general rules in a div as a list */
 export async function displayGeneralRules(

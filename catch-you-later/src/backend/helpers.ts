@@ -1,4 +1,4 @@
-import type { FormattedFishingRule } from './fetchFishingRegulations.ts';
+import type { FormattedFishingRule } from './fetch-fishing-regulations.ts';
 
 /** Group the rules by species and location, each specie location pair gives a set of rules */
 export function groupFormattedRulesBySpeciesAndLocation(

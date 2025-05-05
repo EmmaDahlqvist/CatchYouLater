@@ -1,4 +1,4 @@
-import type { FormattedFishingRule } from './fetchFishingRegulations';
+import type { FormattedFishingRule } from './fetch-fishing-regulations.ts';
 import { groupFormattedRulesBySpeciesAndLocation, removeGeneralRules } from './helpers';
 
 /**Display fishing rules as cards and rule buttons */

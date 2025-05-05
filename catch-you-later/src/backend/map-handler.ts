@@ -1,6 +1,6 @@
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import type { FormattedFishingRule } from './fetchFishingRegulations.ts';
+import type { FormattedFishingRule } from './fetch-fishing-regulations.ts';
 
 const API_BASE_URL = 'https://gw-test.havochvatten.se/external-public/fishing-regulations/v1';
 let drawnPolygons: L.LayerGroup | null = null;

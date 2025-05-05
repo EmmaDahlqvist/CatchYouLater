@@ -1,10 +1,10 @@
 import '../frontend/css/style.css';
-import { displayFormattedFishingRegulations } from './displayFishingRegulations.ts';
-import { displayGeneralRules } from './displayGeneralRegulations.ts';
-import { fetchAllFishingRegulations, getLatestFetchDate } from './fetchFishingRegulations.ts';
-import { setupSearchBar } from './searchHandler.ts';
-import { initializeMap } from './mapHandler.ts';
-import { updatePolygons } from './mapHandler.ts';
+import { displayFormattedFishingRegulations } from './display-fishing-regulations.ts';
+import { displayGeneralRules } from './display-general-regulations.ts';
+import { fetchAllFishingRegulations, getLatestFetchDate } from './fetch-fishing-regulations.ts';
+import { setupSearchBar } from './search-handler.ts';
+import { initializeMap } from './map-handler.ts';
+import { updatePolygons } from './map-handler.ts';
 
 /** Loads the fishing regulation cards and searchbar */
 async function loadData() {
