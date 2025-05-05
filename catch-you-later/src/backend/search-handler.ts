@@ -18,6 +18,7 @@ export function setupSearchBar(
   searchBar.addEventListener('input', async () => {
     const query = searchBar.value.toLocaleLowerCase();
 
+    // Sort and filter the regulations based on the query
     let prioritizedAndFilteredRegulations = prioritizeAndFilterQuery(query, regulations);
     
     // Update the displayed regulations
@@ -28,7 +29,7 @@ export function setupSearchBar(
   });
 }
 
-/** Function to prioritize and filter the search results based on the query.
+/** Function to prioritize/sort and filter the search results based on the query.
  * * @param query - The search query entered by the user.
  * * @param regulations - The list of fishing regulations to filter.
  * * @returns - A new array of filtered and prioritized (sorted) regulations.
@@ -51,10 +52,8 @@ function prioritizeAndFilterQuery(query : string, regulations: FormattedFishingR
           const lower = specie.toLowerCase();
           if (queryRegex.test(lower)) {
             score += 10; // exact match
-            console.log("exact specie match", regulation.text, score);
           } else if (lower.includes(queryLower)) {
             score += 3; // partial match
-            console.log("partial specie match", regulation.text, score);
           }
         }
   
@@ -63,10 +62,8 @@ function prioritizeAndFilterQuery(query : string, regulations: FormattedFishingR
           const lower = loc.name.toLowerCase();
           if (queryRegex.test(lower)) {
             score += 6; // exact match
-            console.log("exact loc match", regulation.text, score);
           } else if (lower.includes(queryLower)) {
             score += 2; // partial match
-            console.log("partial loc match", regulation.text, score);
           }
         }
   
@@ -74,10 +71,8 @@ function prioritizeAndFilterQuery(query : string, regulations: FormattedFishingR
         const textLower = regulation.text.toLowerCase();
         if (queryRegex.test(textLower)) {
           score += 4; // exact match
-          console.log("exact text match", regulation.text, score);
         } else if (textLower.includes(queryLower)) {
           score += 1; // partial match
-          console.log("partial text match", regulation.text, score);
         }
   
         return { ...regulation, _score: score };

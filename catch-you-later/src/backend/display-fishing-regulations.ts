@@ -1,5 +1,5 @@
 import type { FormattedFishingRule } from './fetch-fishing-regulations.ts';
-import { groupFormattedRulesBySpeciesAndLocation, removeGeneralRules } from './helpers';
+import { groupFormattedRulesBySpeciesAndLocation, removeGeneralRules, removeRulesWithText } from './helpers';
 
 /**Display fishing rules as cards and rule buttons */
 export function displayFormattedFishingRegulations(
@@ -12,8 +12,9 @@ export function displayFormattedFishingRegulations(
     return;
   }
 
-  // Remove "Allmän regel" rules
-  const filteredData = removeGeneralRules(data);
+  // Remove "Allmän regel" rules, and rules with "regel" in the text
+  const noGeneralRules = removeGeneralRules(data);
+  const filteredData = removeRulesWithText("regel", noGeneralRules);
 
   // Group the rules by species and location
   const grouped = groupFormattedRulesBySpeciesAndLocation(filteredData);
@@ -61,7 +62,7 @@ export function displayFormattedFishingRegulations(
             <div>${speciesLinks}</div>
           </div>
           <div class="rule-column">
-            <div><strong>Plats</strong></div>
+            <div><strong>${locationNames.includes(',') ? 'Platser' : 'Plats'}</strong></div>
             <div><p>${locationNames}</p></div>
           </div>
           <div class="small-rule-column"></div>
@@ -116,7 +117,7 @@ function buttonClickListener(){
     btn.addEventListener('click', (e) => {
       const el = e.currentTarget as HTMLButtonElement;
 
-      // Hitta det närmaste "rule-card"-elementet
+      // Find closest rule-card element
       const ruleCardElement = el.closest('.rule-card');
       if (!ruleCardElement) {
         console.error('Rule card not found for the clicked button.');
@@ -132,14 +133,14 @@ function buttonClickListener(){
       modalRuleType.textContent = type;
       modalRuleDescription.textContent = text;
 
-      const locationNames = ruleCardElement.querySelector('.rule-column p')?.textContent || 'Ingen specificerad';
+      const locationNames = ruleCardElement.querySelector('.rule-column p')?.textContent ?? 'Ingen specificerad';
 
       if (modalLocationList) {
         modalLocationList.textContent = locationNames;
       }
   
       if (modalLocationTitle) {
-        modalLocationTitle.textContent = locationNames.includes(',') ? 'Platser:' : 'Plats:';
+        modalLocationTitle.textContent = locationNames.includes(',') ? 'Platser:' : 'Plats:'; // Singular or plural based on the number of locations
       }
 
       // Set indicator color

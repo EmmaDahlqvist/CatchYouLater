@@ -1,6 +1,6 @@
 import type { FormattedFishingRule } from './fetch-fishing-regulations.ts';
 
-/** Group the rules by species and location, each specie location pair gives a set of rules */
+/** Group the rules by species and location, each specie location pair gives a set of rules, order based on priority score */
 export function groupFormattedRulesBySpeciesAndLocation(
   data: (FormattedFishingRule & { _score?: number })[]
 ): Map<string, FormattedFishingRule[]> {
@@ -12,7 +12,7 @@ export function groupFormattedRulesBySpeciesAndLocation(
     const key = `${rule.species}::${rule.location.map(loc => loc.id).sort().join(',')}`;
     if (!tempGrouped.has(key)) {
       tempGrouped.set(key, []);
-      scoreMap.set(key, rule._score || 0); // First rule score = group score 
+      scoreMap.set(key, rule._score ?? 0); // First rule score = group score 
     }
 
     tempGrouped.get(key)!.push(rule);
@@ -37,7 +37,12 @@ export function groupFormattedRulesBySpeciesAndLocation(
 
 /** Filter out the general rules from the data, i.e ones with type "Allmän regel"*/
 export function removeGeneralRules(data: FormattedFishingRule[]): FormattedFishingRule[] {
-  return data.filter(rule => rule.type !== 'Allmän regel' &&  !rule.targetGroup.includes('OTHER') && !rule.text.toLocaleLowerCase().includes("regel"));
+  return data.filter(rule => rule.type !== 'Allmän regel' &&  !rule.targetGroup.includes('OTHER'));
+}
+
+/** Filter out the rules with a specific text, e.g. "Regel" */
+export function removeRulesWithText(textToFilterOut : string, data: FormattedFishingRule[]): FormattedFishingRule[] {
+  return data.filter(rule => !rule.text.toLocaleLowerCase().includes(textToFilterOut.toLocaleLowerCase()));
 }
 
 /** gives the rules with type "Allmän regel"*/
