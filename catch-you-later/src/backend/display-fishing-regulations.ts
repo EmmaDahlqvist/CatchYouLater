@@ -18,8 +18,6 @@ export function displayFormattedFishingRegulations(
   // Group the rules by species and location
   const grouped = groupFormattedRulesBySpeciesAndLocation(filteredData);
 
-
-
   container.innerHTML = [...grouped.entries()]
       .map(([_, rules]) => {
         const { species, location } = rules[0];

@@ -8,7 +8,7 @@ import { updatePolygons } from './map-handler.ts';
 
 /** Loads the fishing regulation cards and searchbar */
 async function loadData() {
-  const data = await fetchAllFishingRegulations();
+  let data = await fetchAllFishingRegulations();
 
   // Display all regulations initially
   displayFormattedFishingRegulations(data, '#regulations');
