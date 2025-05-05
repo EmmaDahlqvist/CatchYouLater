@@ -54,9 +54,10 @@ export function displayFormattedFishingRegulations(
         const locationNames = location.length > 0
             ? location.map(l => l.name).join(', ')
             : 'Ingen specificerad';
-
         return `
-      <div class="rule-card" location-ids="${location.map(l => l.id).join(',')}">
+       <div class="rule-card" 
+       location-ids="${location.map(l => l.id).join(',')}" 
+       data-location='${JSON.stringify(location)}'>
         <div class="rule-row">
           <div class="rule-column">
             <div><strong>Art</strong><br></div>
@@ -106,6 +107,8 @@ function buttonClickListener(){
   const modalRuleType = document.getElementById('modalRuleType');
   const modalRuleDescription = document.getElementById('modalRuleDescription');
   const modalTypeIndicator = document.querySelector('.modal-type-indicator');
+  const modalLocationList = document.getElementById("modalLocationList")
+  const modalLocationTitle = document.getElementById("modalLocationTitle");
 
   if (!modal || !modalOverlay || !modalTitle || !modalRuleType || !modalRuleDescription || !modalTypeIndicator) {
     console.error('Modal elements not found!');
@@ -124,6 +127,26 @@ function buttonClickListener(){
       modalTitle.textContent = ruleNumberText;
       modalRuleType.textContent = type;
       modalRuleDescription.textContent = text;
+
+      if (!modalLocationList) {
+        console.error('Elementet modalLocationList hittades inte i DOM!');
+        return;
+      }
+
+      // Fetch and parse location data
+      const ruleCard = el.closest('.rule-card');
+      const locationData = ruleCard?.getAttribute('data-location');
+      console.log('Fetched data-location:', locationData);
+      const locations = locationData ? JSON.parse(locationData) : [];
+      console.log("location", locations)
+      // Populate location list
+      modalLocationList.textContent = locations
+      .map((loc: { name: string; id: string }) => loc.name)
+      .join(', ');
+
+      if (modalLocationTitle) {
+        modalLocationTitle.textContent = locations.length > 1 ? 'Platser:' : 'Plats:';
+      }
 
       // Set indicator color
       modalTypeIndicator.className = 'modal-type-indicator'; // Reset classes
