@@ -1,5 +1,5 @@
 import type { FormattedFishingRule } from './fetch-fishing-regulations.ts';
-import { groupFormattedRulesBySpeciesAndLocation, removeGeneralRules } from './helpers';
+import { groupFormattedRulesBySpeciesAndLocation, removeGeneralRules, removeRulesWithText } from './helpers';
 
 /**Display fishing rules as cards and rule buttons */
 export function displayFormattedFishingRegulations(
@@ -12,13 +12,12 @@ export function displayFormattedFishingRegulations(
     return;
   }
 
-  // Remove "Allmän regel" rules
-  const filteredData = removeGeneralRules(data);
+  // Remove "Allmän regel" rules, and rules with "regel" in the text
+  const noGeneralRules = removeGeneralRules(data);
+  const filteredData = removeRulesWithText("regel", noGeneralRules);
 
   // Group the rules by species and location
   const grouped = groupFormattedRulesBySpeciesAndLocation(filteredData);
-
-
 
   container.innerHTML = [...grouped.entries()]
       .map(([_, rules]) => {
@@ -46,7 +45,7 @@ export function displayFormattedFishingRegulations(
                     return `Övrigt`; // Display "Övrigt" as plain text
                   }
 
-                  return `<a href="https://sv.wikipedia.org/wiki/${encodeURIComponent(baseName)}" target="_blank">${baseName}</a> ${parenthesis}`;
+                  return `<a href="https://sv.wikipedia.org/wiki/${encodeURIComponent(baseName)}" target="_blank">${baseName}</a>${parenthesis ? ' ' + parenthesis : ''}`;
                 })
                 .join(', ')
             : 'Ingen specificerad';
@@ -54,16 +53,16 @@ export function displayFormattedFishingRegulations(
         const locationNames = location.length > 0
             ? location.map(l => l.name).join(', ')
             : 'Ingen specificerad';
-
         return `
-      <div class="rule-card" location-ids="${location.map(l => l.id).join(',')}">
+       <div class="rule-card" 
+       location-ids="${location.map(l => l.id).join(',')}">
         <div class="rule-row">
           <div class="rule-column">
-            <div><strong>Art</strong><br></div>
+            <div><strong>${speciesLinks.includes(',') ? 'Arter' : 'Art'}</strong><br></div>
             <div>${speciesLinks}</div>
           </div>
           <div class="rule-column">
-            <div><strong>Plats</strong></div>
+            <div><strong>${locationNames.includes(',') ? 'Platser' : 'Plats'}</strong></div>
             <div><p>${locationNames}</p></div>
           </div>
           <div class="small-rule-column"></div>
@@ -106,6 +105,8 @@ function buttonClickListener(){
   const modalRuleType = document.getElementById('modalRuleType');
   const modalRuleDescription = document.getElementById('modalRuleDescription');
   const modalTypeIndicator = document.querySelector('.modal-type-indicator');
+  const modalLocationList = document.getElementById("modalLocationList")
+  const modalLocationTitle = document.getElementById("modalLocationTitle");
 
   if (!modal || !modalOverlay || !modalTitle || !modalRuleType || !modalRuleDescription || !modalTypeIndicator) {
     console.error('Modal elements not found!');
@@ -116,6 +117,13 @@ function buttonClickListener(){
     btn.addEventListener('click', (e) => {
       const el = e.currentTarget as HTMLButtonElement;
 
+      // Find closest rule-card element
+      const ruleCardElement = el.closest('.rule-card');
+      if (!ruleCardElement) {
+        console.error('Rule card not found for the clicked button.');
+        return;
+      }
+
       const text = decodeURIComponent(el.dataset.ruleText || '');
       const type = el.dataset.ruleType || 'Okänd'; // Default to 'Okänd'
       const ruleNumberText = el.textContent?.trim() || 'Regel'; // Use button text for title
@@ -124,6 +132,16 @@ function buttonClickListener(){
       modalTitle.textContent = ruleNumberText;
       modalRuleType.textContent = type;
       modalRuleDescription.textContent = text;
+
+      const locationNames = ruleCardElement.querySelector('.rule-column p')?.textContent ?? 'Ingen specificerad';
+
+      if (modalLocationList) {
+        modalLocationList.textContent = locationNames;
+      }
+  
+      if (modalLocationTitle) {
+        modalLocationTitle.textContent = locationNames.includes(',') ? 'Platser:' : 'Plats:'; // Singular or plural based on the number of locations
+      }
 
       // Set indicator color
       modalTypeIndicator.className = 'modal-type-indicator'; // Reset classes
