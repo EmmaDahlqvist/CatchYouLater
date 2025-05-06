@@ -1,0 +1,285 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "namn": "Skagerrakkusten",
+        "wikipedia": "https://sv.wikipedia.org/wiki/Skagerrak",
+        "wikimedia": "https://commons.wikimedia.org/wiki/Category:Skagerrak"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              10.5,
+              58.9
+            ],
+            [
+              12.5,
+              58.9
+            ],
+            [
+              12.5,
+              59.7
+            ],
+            [
+              10.5,
+              59.7
+            ],
+            [
+              10.5,
+              58.9
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "namn": "Kattegattkusten",
+        "wikipedia": "https://sv.wikipedia.org/wiki/Kattegatt",
+        "wikimedia": "https://commons.wikimedia.org/wiki/Category:Kattegat"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              10.5,
+              56.6
+            ],
+            [
+              13.5,
+              56.6
+            ],
+            [
+              13.5,
+              58.9
+            ],
+            [
+              10.5,
+              58.9
+            ],
+            [
+              10.5,
+              56.6
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "namn": "Öresundskusten",
+        "wikipedia": "https://sv.wikipedia.org/wiki/Öresund",
+        "wikimedia": "https://commons.wikimedia.org/wiki/Category:Øresund"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              11.6,
+              55.8
+            ],
+            [
+              13.2,
+              55.8
+            ],
+            [
+              13.2,
+              56.6
+            ],
+            [
+              11.6,
+              56.6
+            ],
+            [
+              11.6,
+              55.8
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "namn": "Sydkusten",
+        "wikipedia": "https://sv.wikipedia.org/wiki/Skånes_sydkust",
+        "wikimedia": "https://commons.wikimedia.org/wiki/Category:South_Coast_of_Scandinavia"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              12.7,
+              55.2
+            ],
+            [
+              16.0,
+              55.2
+            ],
+            [
+              16.0,
+              55.8
+            ],
+            [
+              12.7,
+              55.8
+            ],
+            [
+              12.7,
+              55.2
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "namn": "Östkusten (Östersjön)",
+        "wikipedia": "https://sv.wikipedia.org/wiki/Östersjön",
+        "wikimedia": "https://commons.wikimedia.org/wiki/Category:Baltic_Sea"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.7,
+              56.6
+            ],
+            [
+              20.0,
+              56.6
+            ],
+            [
+              20.0,
+              60.7
+            ],
+            [
+              15.7,
+              60.7
+            ],
+            [
+              15.7,
+              56.6
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "namn": "Gotlandskusten",
+        "wikipedia": "https://sv.wikipedia.org/wiki/Gotland",
+        "wikimedia": "https://commons.wikimedia.org/wiki/Category:Gotland"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              17.0,
+              56.8
+            ],
+            [
+              19.0,
+              56.8
+            ],
+            [
+              19.0,
+              58.3
+            ],
+            [
+              17.0,
+              58.3
+            ],
+            [
+              17.0,
+              56.8
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "namn": "Bottenhavskusten",
+        "wikipedia": "https://sv.wikipedia.org/wiki/Bottenhavet",
+        "wikimedia": "https://commons.wikimedia.org/wiki/Category:Bothnian_Sea"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              17.0,
+              60.7
+            ],
+            [
+              22.0,
+              60.7
+            ],
+            [
+              22.0,
+              63.7
+            ],
+            [
+              17.0,
+              63.7
+            ],
+            [
+              17.0,
+              60.7
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "namn": "Bottenvikskusten",
+        "wikipedia": "https://sv.wikipedia.org/wiki/Bottenviken",
+        "wikimedia": "https://commons.wikimedia.org/wiki/Category:Bothnian_Bay"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              18.0,
+              63.7
+            ],
+            [
+              24.5,
+              63.7
+            ],
+            [
+              24.5,
+              66.5
+            ],
+            [
+              18.0,
+              66.5
+            ],
+            [
+              18.0,
+              63.7
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
