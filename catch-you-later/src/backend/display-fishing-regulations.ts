@@ -56,23 +56,24 @@ export function displayFormattedFishingRegulations(
         ? location.map(l => l.name).join(', ')
         : 'Ingen specificerad';
       return `
-       <div class="rule-card" 
-       location-ids="${location.map(l => l.id).join(',')}">
-        <div class="rule-row">
-          <div class="rule-column">
-            <div><strong>${speciesLinks.includes(',') ? 'Arter' : 'Art'}</strong><br></div>
-            <div>${speciesLinks}</div>
-          </div>
-          <div class="rule-column">
-            <div><strong>${locationNames.includes(',') ? 'Platser' : 'Plats'}</strong></div>
-            <div><p>${locationNames}</p></div>
-          </div>
-          <div class="small-rule-column"></div>
-          <div class="rule-column rule-buttons-wrap rule-text">
-            <strong>Fiskeregler</strong>
-            <div class="rule-buttons">
-              ${rules
-                .map((rule, i) => `
+  <div class="rule-card" 
+       location-ids="${location.map(l => l.id).join(',')}" 
+       data-rule-index="${data.indexOf(rules[0])}">
+    <div class="rule-row">
+      <div class="rule-column">
+        <div><strong>${speciesLinks.includes(',') ? 'Arter' : 'Art'}</strong><br></div>
+        <div>${speciesLinks}</div>
+      </div>
+      <div class="rule-column">
+        <div><strong>${locationNames.includes(',') ? 'Platser' : 'Plats'}</strong></div>
+        <div><p>${locationNames}</p></div>
+      </div>
+      <div class="small-rule-column"></div>
+      <div class="rule-column rule-buttons-wrap rule-text">
+        <strong>Fiskeregler</strong>
+        <div class="rule-buttons">
+          ${rules
+            .map((rule, i) => `
                   <button
                     class="rule-btn"
                     data-rule-type="${rule.type}"
@@ -81,17 +82,18 @@ export function displayFormattedFishingRegulations(
                     Regel nr ${i + 1}
                   </button>
                 `)
-                .join('')}
-            </div>
-          </div>
+            .join('')}
         </div>
       </div>
+    </div>
+  </div>
     `;
     })
     .join('');
 
   attachRuleButtonListeners();
   attachRuleCardListeners(data, map);
+
 /** Function to attach event listeners to rule buttons*/ 
 function attachRuleButtonListeners() {
   buttonClickListener();
@@ -102,9 +104,16 @@ function attachRuleButtonListeners() {
 function attachRuleCardListeners(data: FormattedFishingRule[], map: L.Map) {
   const ruleCards = document.querySelectorAll('.rule-card');
 
-  ruleCards.forEach((card, index) => {
+  ruleCards.forEach((card) => {
+    const ruleIndex = parseInt(card.getAttribute('data-rule-index') || '-1', 10);
+    if (ruleIndex === -1) {
+      console.error('Rule index not found for card.');
+      return;
+    }
+
+    const rule = data[ruleIndex];
+
     card.addEventListener('mouseover', () => {
-      const rule = data[index];
       updatePolygons(map, [rule]); // Update the map to show only the hovered rule's geographies
     });
 
