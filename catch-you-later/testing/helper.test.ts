@@ -52,7 +52,13 @@ describe('removeGeneralRules', () => {
         expect(result[0].species).toBe('Salmon');
     });
 });
-
+describe('removeRulesWithText', () => {
+    it('filters out rules containing specific text', () => {
+        const result = removeRulesWithText('fisketid', mockData);
+        expect(result.length).toBe(2);
+        expect(result.some(r => r.text.includes('fisketid'))).toBe(false);
+    });
+});
 
 describe('getGeneralRules', () => {
     it('returns only general rules', () => {

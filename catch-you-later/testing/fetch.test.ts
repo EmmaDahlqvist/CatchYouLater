@@ -5,16 +5,49 @@ import {
     getLatestFetchDate,
     filterRegulations,
     RegulationFilter
-} from '../src/backend/fetch-fishing-regulations';// adjust this path
+} from '../src/backend/fetch-fishing-regulations'; // Adjust the path as needed
 
+const localStorageMock = (() => {
+    let store: Record<string, string> = {};
 
-// Mocking localStorage
+    return {
+        getItem(key: string) {
+            return store[key] || null;
+        },
+        setItem(key: string, value: string) {
+            store[key] = value.toString();
+        },
+        removeItem(key: string) {
+            delete store[key];
+        },
+        clear() {
+            store = {};
+        },
+        get length() {
+            return Object.keys(store).length;
+        },
+        key(index: number) {
+            const keys = Object.keys(store);
+            return keys[index] || null;
+        },
+    };
+})();
+
+globalThis.localStorage = localStorageMock as Storage;
+// Ensure global fetch is mocked
+globalThis.fetch = vi.fn() as unknown as typeof fetch;
+
+// Reset mocks before each test
 beforeEach(() => {
     localStorage.clear();
-});
+    (fetch as unknown as Mock).mockReset();
 
-// Mock fetch
-(globalThis.fetch as typeof fetch) = vi.fn();
+    // Provide a default fallback response to prevent unhandled fetch calls
+    (fetch as unknown as Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({}),
+    });
+});
 
 describe('Fishing regulations logic', () => {
     it('getLatestFetchDate returns current date if no cache exists', async () => {
@@ -93,19 +126,17 @@ describe('Fishing regulations logic', () => {
             }]
         };
 
-        // Mock fetch for regulations
+        // First fetch call returns regulations
         (fetch as unknown as Mock).mockResolvedValueOnce({
             ok: true,
-            json: async () => mockRegulations,
+            json: async () => ({ list: mockRegulations }),
         });
 
-
-        // Mock fetch for geographies
+        // Second fetch call returns geographies
         (fetch as unknown as Mock).mockResolvedValueOnce({
             ok: true,
             json: async () => mockGeo,
         });
-
 
         const result = await fetchAllFishingRegulations();
 
