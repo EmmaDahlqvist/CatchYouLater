@@ -129,7 +129,7 @@ describe('Fishing regulations logic', () => {
         // First fetch call returns regulations
         (fetch as unknown as Mock).mockResolvedValueOnce({
             ok: true,
-            json: async () => ({ list: mockRegulations }),
+            json: async () => ({list: mockRegulations}),
         });
 
         // Second fetch call returns geographies
@@ -145,10 +145,14 @@ describe('Fishing regulations logic', () => {
         expect(result[0].type).toBe('Förbud');
         expect(result[0].location[0]).toEqual({
             name: 'Östersjön',
-            geometry: {
-                type: 'Polygon',
-                coordinates: [[[12, 56], [14, 56]]],
-            }
+            id: 'geo123',
+            geography: {
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [[[12, 56], [14, 56]]],
+                },
+            },
         });
     });
 });
+
