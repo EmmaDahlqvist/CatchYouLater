@@ -1,11 +1,12 @@
 ﻿/// <reference types="vitest" />
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, type Mock, beforeEach } from 'vitest';
 import {
     fetchAllFishingRegulations,
     getLatestFetchDate,
     filterRegulations,
     RegulationFilter
-} from '../src/backend/fetch-fishing-regulations'; // adjust this path
+} from '../src/backend/fetch-fishing-regulations';// adjust this path
+
 
 // Mocking localStorage
 beforeEach(() => {
@@ -93,16 +94,18 @@ describe('Fishing regulations logic', () => {
         };
 
         // Mock fetch for regulations
-        (fetch as unknown as vi.Mock).mockResolvedValueOnce({
+        (fetch as unknown as Mock).mockResolvedValueOnce({
             ok: true,
-            json: async () => ({ list: mockRegulations }),
+            json: async () => mockRegulations,
         });
 
+
         // Mock fetch for geographies
-        (fetch as unknown as vi.Mock).mockResolvedValueOnce({
+        (fetch as unknown as Mock).mockResolvedValueOnce({
             ok: true,
             json: async () => mockGeo,
         });
+
 
         const result = await fetchAllFishingRegulations();
 
