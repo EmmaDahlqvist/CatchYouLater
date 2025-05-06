@@ -10,8 +10,7 @@ import { updatePolygons } from './map-handler.ts';
 async function loadData() {
   const data = await fetchAllFishingRegulations();
 
-  // Display all regulations initially
-  displayFormattedFishingRegulations(data, '#regulations');
+  
 
   // Display general rules
   displayGeneralRules(data, '#general-rules');
@@ -23,6 +22,9 @@ async function loadData() {
   setupSearchBar('searchBar', data, '#regulations', map);
 
   await updatePolygons(map, data);
+
+  // Display all regulations initially
+  displayFormattedFishingRegulations(data, '#regulations', map);
 
 }
 

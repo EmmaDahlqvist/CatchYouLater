@@ -1,10 +1,12 @@
 import type { FormattedFishingRule } from './fetch-fishing-regulations.ts';
 import { groupFormattedRulesBySpeciesAndLocation, removeGeneralRules, removeRulesWithText } from './helpers';
+import { updatePolygons } from './map-handler';
 
 /**Display fishing rules as cards and rule buttons */
 export function displayFormattedFishingRegulations(
   data: FormattedFishingRule[],
-  containerId: string
+  containerId: string,
+  map: L.Map
 ) {
   const container = document.querySelector<HTMLDivElement>(containerId);
   if (!container) {
@@ -20,40 +22,40 @@ export function displayFormattedFishingRegulations(
   const grouped = groupFormattedRulesBySpeciesAndLocation(filteredData);
 
   container.innerHTML = [...grouped.entries()]
-      .map(([_, rules]) => {
-        const { species, location } = rules[0];
+    .map(([_, rules]) => {
+      const { species, location } = rules[0];
 
-        // Process species names with exceptions
-        const processedSpecies = species
-            .flatMap(s => s.split('/')) // Split names with slashes into separate species
-            .flatMap(s => s.split(',').map(name => name.trim())) // Split by commas and trim
+      // Process species names with exceptions
+      const processedSpecies = species
+        .flatMap(s => s.split('/')) // Split names with slashes into separate species
+        .flatMap(s => s.split(',').map(name => name.trim())) // Split by commas and trim
+        .map(s => {
+          const words = s.split(' ');
+          if (words.length > 1) {
+            words[1] = words[1].toLowerCase(); // Lowercase the second word
+          }
+          return words.join(' ');
+        });
+
+      const speciesLinks = processedSpecies.length > 0
+        ? processedSpecies
             .map(s => {
-              const words = s.split(' ');
-              if (words.length > 1) {
-                words[1] = words[1].toLowerCase(); // Lowercase the second word
+              const baseName = s.replace(/\s*\(.*?\)/g, ''); // Remove parenthesis for the link
+              const parenthesis = s.match(/\(.*?\)/)?.[0] || ''; // Extract parenthesis
+
+              if (baseName.toLowerCase() === 'övrigt') {
+                return `Övrigt`; // Display "Övrigt" as plain text
               }
-              return words.join(' ');
-            });
 
-        const speciesLinks = processedSpecies.length > 0
-            ? processedSpecies
-                .map(s => {
-                  const baseName = s.replace(/\s*\(.*?\)/g, ''); // Remove parenthesis for the link
-                  const parenthesis = s.match(/\(.*?\)/)?.[0] || ''; // Extract parenthesis
+              return `<a href="https://sv.wikipedia.org/wiki/${encodeURIComponent(baseName)}" target="_blank">${baseName}</a>${parenthesis ? ' ' + parenthesis : ''}`;
+            })
+            .join(', ')
+        : 'Ingen specificerad';
 
-                  if (baseName.toLowerCase() === 'övrigt') {
-                    return `Övrigt`; // Display "Övrigt" as plain text
-                  }
-
-                  return `<a href="https://sv.wikipedia.org/wiki/${encodeURIComponent(baseName)}" target="_blank">${baseName}</a>${parenthesis ? ' ' + parenthesis : ''}`;
-                })
-                .join(', ')
-            : 'Ingen specificerad';
-
-        const locationNames = location.length > 0
-            ? location.map(l => l.name).join(', ')
-            : 'Ingen specificerad';
-        return `
+      const locationNames = location.length > 0
+        ? location.map(l => l.name).join(', ')
+        : 'Ingen specificerad';
+      return `
        <div class="rule-card" 
        location-ids="${location.map(l => l.id).join(',')}">
         <div class="rule-row">
@@ -70,7 +72,7 @@ export function displayFormattedFishingRegulations(
             <strong>Fiskeregler</strong>
             <div class="rule-buttons">
               ${rules
-            .map((rule, i) => `
+                .map((rule, i) => `
                   <button
                     class="rule-btn"
                     data-rule-type="${rule.type}"
@@ -79,21 +81,37 @@ export function displayFormattedFishingRegulations(
                     Regel nr ${i + 1}
                   </button>
                 `)
-            .join('')}
+                .join('')}
             </div>
           </div>
         </div>
       </div>
     `;
-      })
-      .join('');
+    })
+    .join('');
 
   attachRuleButtonListeners();
+  attachRuleCardListeners(data, map);
 /** Function to attach event listeners to rule buttons*/ 
 function attachRuleButtonListeners() {
   buttonClickListener();
   buttonColorSelector();
   setupModal(); // Initialize modal close listeners
+}
+
+function attachRuleCardListeners(data: FormattedFishingRule[], map: L.Map) {
+  const ruleCards = document.querySelectorAll('.rule-card');
+
+  ruleCards.forEach((card, index) => {
+    card.addEventListener('mouseover', () => {
+      const rule = data[index];
+      updatePolygons(map, [rule]); // Update the map to show only the hovered rule's geographies
+    });
+
+    card.addEventListener('mouseout', () => {
+      updatePolygons(map, data); // Reset the map to show all geographies
+    });
+  });
 }
 
 /** Function to add event listeners to each button and log the rule text and type when clicked */

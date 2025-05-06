@@ -22,7 +22,7 @@ export function setupSearchBar(
     let prioritizedAndFilteredRegulations = prioritizeAndFilterQuery(query, regulations);
     
     // Update the displayed regulations
-    displayFormattedFishingRegulations(prioritizedAndFilteredRegulations, containerId);
+    displayFormattedFishingRegulations(prioritizedAndFilteredRegulations, containerId, map);
 
     // Update the polygons on the map
     await updatePolygons(map, prioritizedAndFilteredRegulations);
