@@ -113,12 +113,12 @@ function attachRuleCardListeners(data: FormattedFishingRule[], map: L.Map) {
 
     const rule = data[ruleIndex];
 
-    card.addEventListener('mouseover', () => {
-      updatePolygons(map, [rule]); // Update the map to show only the hovered rule's geographies
+    card.addEventListener('mouseenter', () => {
+      updatePolygons(map, [rule], true); // Update the map to show only the hovered rule's geographies
     });
 
-    card.addEventListener('mouseout', () => {
-      updatePolygons(map, data); // Reset the map to show all geographies
+    card.addEventListener('mouseleave', () => {
+      updatePolygons(map, data, true); // Reset the map to show all geographies
     });
   });
 }

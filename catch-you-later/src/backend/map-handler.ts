@@ -33,15 +33,17 @@ export async function fetchGeographyById(geoId: string): Promise<any | null> {
     }
 }
 
-export async function updatePolygons(map: L.Map, regulations: FormattedFishingRule[]): Promise<void> {
+export async function updatePolygons(map: L.Map, regulations: FormattedFishingRule[], useTimeout: Boolean = false): Promise<void> {
     try {
         // Generate a new token for this operation
         const token = Symbol();
         currentToken = token;
 
-        // Wait for potential searchbar updates (causes lag otherwise)
-        await new Promise(resolve => setTimeout(resolve, 500));
-
+        // if useTimeout, wait (otherwise we potentially lag)
+        if (useTimeout) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        
         if (drawnPolygons) {
             map.removeLayer(drawnPolygons);
         }

@@ -25,7 +25,7 @@ export function setupSearchBar(
     displayFormattedFishingRegulations(prioritizedAndFilteredRegulations, containerId, map);
 
     // Update the polygons on the map
-    await updatePolygons(map, prioritizedAndFilteredRegulations);
+    await updatePolygons(map, prioritizedAndFilteredRegulations, true);
   });
 }
 
