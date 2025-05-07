@@ -2,7 +2,8 @@ import type { FormattedFishingRule } from './fetch-fishing-regulations.ts';
 import { groupFormattedRulesBySpeciesAndLocation, removeGeneralRules, removeRulesWithText } from './helpers';
 import { updatePolygons } from './map-handler';
 
-const selectedCards = new Set<number>();
+export const selectedCards = new Set<number>();
+let activeRuleIndex: number | null = null;
 
 /**Display fishing rules as cards and rule buttons */
 export function displayFormattedFishingRegulations(
@@ -113,18 +114,22 @@ function attachRuleCardListeners(data: FormattedFishingRule[], map: L.Map) {
 
     const rule = data[ruleIndex];
 
-    // Add hover listeners (unchanged)
+    // Add hover listeners
     card.addEventListener('mouseenter', () => {
-      updatePolygons(map, [rule], true); // Highlight hovered rule's geography
+      if (activeRuleIndex === null) {
+        updatePolygons(map, [rule], true);
+      }
     });
 
     card.addEventListener('mouseleave', () => {
-      if (selectedCards.size === 0) {
-        updatePolygons(map, data, true); // Reset map to show all geographies
-      } else {
-        // Show only selected geographies
-        const selectedRules = Array.from(selectedCards).map((index) => data[index]);
-        updatePolygons(map, selectedRules, true);
+      if (activeRuleIndex === null) {
+        if (selectedCards.size === 0) {
+          updatePolygons(map, data, true); // Reset map to show all geographies
+        } else {
+          // Show only selected geographies
+          const selectedRules = Array.from(selectedCards).map((index) => data[index]);
+          updatePolygons(map, selectedRules, true);
+        }
       }
     });
 
@@ -139,7 +144,6 @@ function attachRuleCardListeners(data: FormattedFishingRule[], map: L.Map) {
         card.classList.add('selected');
       }
 
-      // Update map based on selected cards
       if (selectedCards.size === 0) {
         updatePolygons(map, data, true); // Reset map to show all geographies
       } else {
@@ -169,12 +173,20 @@ function buttonClickListener(){
 
   document.querySelectorAll('.rule-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Don't select the card
+
       const el = e.currentTarget as HTMLButtonElement;
 
       // Find closest rule-card element
       const ruleCardElement = el.closest('.rule-card');
       if (!ruleCardElement) {
         console.error('Rule card not found for the clicked button.');
+        return;
+      }
+
+      const ruleIndex = parseInt(ruleCardElement.getAttribute('data-rule-index') || '-1', 10);
+      if (ruleIndex === -1) {
+        console.error('Rule index not found for the clicked button.');
         return;
       }
 
@@ -213,6 +225,10 @@ function buttonClickListener(){
       modal.style.display = 'block';
       modalOverlay.style.display = 'block';
 
+      const rule = data[ruleIndex];
+      updatePolygons(map, [rule], true);
+      activeRuleIndex = ruleIndex;
+
       console.log('Klickade regel:', { text, type }); // Keep console log for debugging if needed
     });
   });
@@ -232,6 +248,10 @@ function setupModal() {
   const closeModal = () => {
     modal.style.display = 'none';
     modalOverlay.style.display = 'none';
+
+    // Reset the map to hover-based behavior
+    activeRuleIndex = null;
+    updatePolygons(map, selectedCards.size === 0 ? data : Array.from(selectedCards).map(index => data[index]), true);
   };
 
   closeButton.addEventListener('click', closeModal);

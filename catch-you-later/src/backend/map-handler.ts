@@ -59,6 +59,10 @@ export async function updatePolygons(map: L.Map, regulations: FormattedFishingRu
         const processedLocations = new Set<string>();
 
         for (const regulation of regulations) {
+            if (!regulation || !regulation.location) {
+                console.warn('Skipping invalid regulation:', regulation);
+                continue;
+            }
             for (const location of regulation.location) {
                 if (currentToken !== token) {
                     console.log('Polygon drawing interrupted by a new updatePolygons call.');
@@ -98,66 +102,5 @@ export async function updatePolygons(map: L.Map, regulations: FormattedFishingRu
         drawnPolygons.addTo(map);
     } catch (error) {
         console.error('Error updating polygons:', error);
-    }
-}
-
-export async function addPolygons(map: L.Map, regulations: FormattedFishingRule[], useTimeout: Boolean = false): Promise<void> {
-    try {
-        // Generate a new token for this operation
-        const token = Symbol();
-        currentToken = token;
-
-        // if useTimeout, wait (otherwise we potentially lag)
-        if (useTimeout) {
-            await new Promise(resolve => setTimeout(resolve, 500));
-        }
-
-        if (!drawnPolygons) {
-            drawnPolygons = L.layerGroup();
-        }
-
-        // Use a Set to track processed location IDs
-        const processedLocations = new Set<string>();
-
-        for (const regulation of regulations) {
-            for (const location of regulation.location) {
-                if (currentToken !== token) {
-                    console.log('Polygon drawing interrupted by a new addPolygons call.');
-                    return;
-                }
-
-                // Skip if this location has already been processed
-                if (processedLocations.has(location.id)) {
-                    continue;
-                }
-
-                processedLocations.add(location.id);
-
-                const geography = location.geography;
-                if (geography && geography.geometry && geography.geometry.coordinates) {
-                    if (geography.geometry.type === 'MultiPolygon') {
-                        geography.geometry.coordinates.forEach((polygon: any) => {
-                            polygon.forEach((ring: any) => {
-                                const coordinates: L.LatLngTuple[] = ring.map((coord: any) => [coord[1], coord[0]]);
-                                const leafletPolygon = L.polygon(coordinates, { color: 'blue' });
-                                leafletPolygon.bindPopup(`<b>${location.name || 'Unknown Location'}</b>`);
-                                drawnPolygons?.addLayer(leafletPolygon);
-                            });
-                        });
-                    } else if (geography.geometry.type === 'Polygon') {
-                        geography.geometry.coordinates.forEach((ring: any) => {
-                            const coordinates: L.LatLngTuple[] = ring.map((coord: any) => [coord[1], coord[0]]);
-                            const leafletPolygon = L.polygon(coordinates, { color: 'blue' });
-                            leafletPolygon.bindPopup(`<b>${location.name || 'Unknown Location'}</b>`);
-                            drawnPolygons?.addLayer(leafletPolygon);
-                        });
-                    }
-                }
-            }
-        }
-
-        drawnPolygons.addTo(map);
-    } catch (error) {
-        console.error('Error adding polygons:', error);
     }
 }

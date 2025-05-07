@@ -1,5 +1,5 @@
 import type { FormattedFishingRule } from './fetch-fishing-regulations.ts';
-import { displayFormattedFishingRegulations } from './display-fishing-regulations.ts';
+import { displayFormattedFishingRegulations, selectedCards } from './display-fishing-regulations.ts';
 import { updatePolygons } from './map-handler.ts';
 
 export function setupSearchBar(
@@ -24,6 +24,7 @@ export function setupSearchBar(
     // Update the displayed regulations
     displayFormattedFishingRegulations(prioritizedAndFilteredRegulations, containerId, map);
 
+    selectedCards.clear();
     // Update the polygons on the map
     await updatePolygons(map, prioritizedAndFilteredRegulations, true);
   });
