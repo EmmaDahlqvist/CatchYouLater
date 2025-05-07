@@ -40,8 +40,7 @@ export function setupSearchBar(
 function prioritizeAndFilterQuery(query : string, regulations: FormattedFishingRule[]) {
   let filteredRegulations = regulations;
   if (query) {
-    const queryLower = query.toLowerCase();
-    const queryRegex = new RegExp(`\\b${queryLower}\\b`, 'i');
+    const queryRegex = new RegExp(`(^|[^\\p{L}])${query}(?=[^\\p{L}]|$)`, 'iu');
   
     filteredRegulations = regulations
       .map(regulation => {
@@ -52,8 +51,29 @@ function prioritizeAndFilterQuery(query : string, regulations: FormattedFishingR
           const lower = specie.toLowerCase();
           if (queryRegex.test(lower)) {
             score += 10; // exact match
-          } else if (lower.includes(queryLower)) {
+
+          } else if (lower.includes(query)) {
             score += 3; // partial match
+
+            // order so matched specie comes first in specie list
+            let orderSpecies = []
+            let perfectIsSet = false
+            regulation.species.forEach(specie => {
+
+              // prioritize exact matched first
+              if(specie.toLocaleLowerCase() === query) {
+                orderSpecies.unshift(specie)
+                perfectIsSet = true
+              }
+              // partial match
+              else if(specie.toLocaleLowerCase().includes(query) && !perfectIsSet) {
+                orderSpecies.unshift(specie)
+              } else {
+                // just push the rest
+                orderSpecies.push(specie)
+              }
+              regulation.species = orderSpecies;
+            });
           }
         }
   
@@ -62,7 +82,7 @@ function prioritizeAndFilterQuery(query : string, regulations: FormattedFishingR
           const lower = loc.name.toLowerCase();
           if (queryRegex.test(lower)) {
             score += 6; // exact match
-          } else if (lower.includes(queryLower)) {
+          } else if (lower.includes(query)) {
             score += 2; // partial match
           }
         }
@@ -71,7 +91,7 @@ function prioritizeAndFilterQuery(query : string, regulations: FormattedFishingR
         const textLower = regulation.text.toLowerCase();
         if (queryRegex.test(textLower)) {
           score += 4; // exact match
-        } else if (textLower.includes(queryLower)) {
+        } else if (textLower.includes(query)) {
           score += 1; // partial match
         }
   
