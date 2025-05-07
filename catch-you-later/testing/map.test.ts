@@ -1,29 +1,29 @@
 /// <reference types="vitest" />
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+// Mock leaflet module
+vi.mock('leaflet', () => {
+    return {
+        layerGroup: vi.fn(() => ({
+            addLayer: vi.fn(),
+            addTo: vi.fn(),
+        })),
+        polygon: vi.fn(() => ({
+            bindPopup: vi.fn(),
+        })),
+    };
+});
+
+// Now import the mocked module and your source files
 import * as L from 'leaflet';
-import { updatePolygons } from '../src/backend/map-handler'; // adjust path
+import { updatePolygons } from '../src/backend/map-handler';
 import type { FormattedFishingRule } from '../src/backend/fetch-fishing-regulations';
 
-// Setup Leaflet DOM dependencies
-beforeEach(() => {
-    // mock leaflet map and layerGroup behavior
-    vi.spyOn(L, 'layerGroup').mockReturnValue({
-        addLayer: vi.fn(),
-        addTo: vi.fn(),
-    } as unknown as L.LayerGroup);
-
-    vi.spyOn(L, 'polygon').mockImplementation(() => ({
-        bindPopup: vi.fn(),
-    } as unknown as L.Polygon));
-});
-
-afterEach(() => {
-    vi.restoreAllMocks();
-});
-
-
-
 describe('updatePolygons', () => {
+    beforeEach(() => {
+        vi.clearAllMocks(); // reset mocks before each test
+    });
+
     it('adds polygons for new regulations to the map', async () => {
         const mockMap = {
             removeLayer: vi.fn(),
@@ -62,12 +62,11 @@ describe('updatePolygons', () => {
 
         await updatePolygons(mockMap, regulations);
 
-        expect(L.layerGroup).toHaveBeenCalled(); // polygons were grouped
-        expect(L.polygon).toHaveBeenCalled();    // polygons were created
+        expect(L.layerGroup).toHaveBeenCalled();
+        expect(L.polygon).toHaveBeenCalled();
     });
 
     it('does nothing if regulations list is empty', async () => {
-
         const mockMap = {
             removeLayer: vi.fn(),
         } as unknown as L.Map;
