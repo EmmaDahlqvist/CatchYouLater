@@ -14,9 +14,7 @@ export function displayFormattedFishingRegulations(
     return;
   }
 
-  // Remove "Allmän regel" rules, and rules with "regel" in the text
-  const noGeneralRules = removeGeneralRules(data);
-  const filteredData = removeRulesWithText("regel", noGeneralRules);
+  let filteredData = data;
 
   // Group the rules by species and location
   const grouped = groupFormattedRulesBySpeciesAndLocation(filteredData);

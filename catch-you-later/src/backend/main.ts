@@ -5,18 +5,22 @@ import { fetchAllFishingRegulations, getLatestFetchDate } from './fetch-fishing-
 import { setupSearchBar } from './search-handler.ts';
 import { initializeMap } from './map-handler.ts';
 import { updatePolygons } from './map-handler.ts';
+import { removeGeneralRules, removeRulesWithText } from './helpers.ts';
 
 /** Loads the fishing regulation cards and searchbar */
 async function loadData() {
-  const data = await fetchAllFishingRegulations();
-
-  
+  let data = await fetchAllFishingRegulations();
 
   // Display general rules
   displayGeneralRules(data, '#general-rules');
   
   // Initialize the map
   const map = await initializeMap();
+
+  // Remove "Allmän regel" rules, and rules with "regel" in the text
+  const noGeneralRules = removeGeneralRules(data);
+  const filteredData = removeRulesWithText("regel", noGeneralRules);
+  data = filteredData;
 
   // Set up the search bar functionality
   setupSearchBar('searchBar', data, '#regulations', map);
