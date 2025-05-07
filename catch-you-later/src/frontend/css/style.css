@@ -685,3 +685,106 @@ html, body {
   margin-left: auto; /* Center horizontally */
   margin-right: auto; /* Center horizontally */
 }
+
+
+.home-page {
+  height: 100vh; /* Full viewport height */
+}
+
+.welcome {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.welcome h1 {
+  font-family: 'Lora', serif;
+  font-size: clamp(3.5rem, 7vw, 5.5rem);
+  color: #222222;
+  margin: 0;
+  font-weight: 400;
+}
+
+.welcome h3 {
+  font-family: 'Lora', serif;
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  color: #222;
+  font-weight: 400;
+  margin-top: 5rem;
+  margin-bottom: 2rem;
+  max-width: 800px;
+  text-align: center;
+}
+
+.home-navigation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.home-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem 2rem;
+  box-sizing: border-box;
+  text-align: center;
+  height: calc(100vh - 70px);
+  transform: translateY(-5%);
+}
+
+.home-buttons {
+  display: flex;
+  flex-wrap: wrap; /* 👈 tillåt radbrytning */
+  justify-content: center;
+  gap: 5rem; /* 👈 snyggt mellanrum mellan knapparna */
+  width: 100%;
+}
+
+.home-button {
+  background-color: #3686FA;
+  color: #FFFFFF;
+  border: 1px solid #000000;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: clamp(1.3rem, 1.6vw, 1.4rem);
+  cursor: pointer;
+  margin: 0.6rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+
+  width: clamp(180px, 30vw, 240px);
+  aspect-ratio: 2.7 / 1;
+
+  display: flex;                
+  align-items: center;          
+  justify-content: center;      
+  text-align: center;
+  white-space: normal;
+  line-height: 1.2;
+  padding: 0.6rem 1rem;
+}
+
+.home-button:hover {
+  background-color: #2f77db; /* mörkare blå på hover */
+  transform: translateY(-2px); /* liten lyft-effekt */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25); /* djupare skugga */
+}
+
+.home-button:active {
+  transform: scale(0.97); /* tryck-effekt */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3); /* intryckt känsla */
+}
+
+@media (max-width: 600px) {
+  .home-button {
+    width: 90%;
+    font-size: 1.1rem;
+  }
+}
