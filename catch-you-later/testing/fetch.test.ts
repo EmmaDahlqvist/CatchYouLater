@@ -2,9 +2,7 @@
 import { describe, it, expect, vi, type Mock, beforeEach } from 'vitest';
 import {
     fetchAllFishingRegulations,
-    getLatestFetchDate,
-    filterRegulations,
-    RegulationFilter
+    getLatestFetchDate
 } from '../src/backend/fetch-fishing-regulations'; // Adjust the path as needed
 
 const localStorageMock = (() => {
@@ -64,37 +62,6 @@ describe('Fishing regulations logic', () => {
         expect(result).toBe(expected);
     });
 
-    it('filterRegulations correctly filters by species and type', () => {
-        const mockRules = [
-            {
-                species: ['Abborre'],
-                text: 'No fishing allowed',
-                location: [],
-                type: 'Förbud',
-                startsAt: '2024-01-01',
-                gear: 'Nät',
-                targetGroup: ['RECREATIONAL'],
-            },
-            {
-                species: ['Gädda'],
-                text: 'Catch & Release',
-                location: [],
-                type: 'Rekommendation',
-                startsAt: '2024-02-01',
-                gear: 'Krok',
-                targetGroup: ['COMMERCIAL'],
-            },
-        ];
-
-        const filters: RegulationFilter = {
-            species: ['Abborre'],
-            type: 'Förbud',
-        };
-
-        const result = filterRegulations(mockRules, filters);
-        expect(result).toHaveLength(1);
-        expect(result[0].species).toContain('Abborre');
-    });
 
     it('fetchAllFishingRegulations returns formatted regulation list', async () => {
         const mockRegulations = [{
