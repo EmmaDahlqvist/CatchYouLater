@@ -709,7 +709,7 @@ html, body {
 
 .welcome h1 {
   font-family: 'Lora', serif;
-  font-size: clamp(3.5rem, 6.5vw, 5rem);
+  font-size: clamp(3.5rem, 5.5vw, 5rem);
   color: #222222;
   margin: 0;
   font-weight: 400;
@@ -717,7 +717,7 @@ html, body {
 
 .welcome h3 {
   font-family: 'Lora', serif;
-  font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+  font-size: clamp(1.8rem, 2vw, 2.5rem);
   color: #222;
   font-weight: 400;
   margin-top: 5rem;
