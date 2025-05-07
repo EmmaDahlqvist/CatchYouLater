@@ -111,6 +111,9 @@ html, body {
   border-color: #B2B2B2;
   border-width: 1.8px;
   border-style: solid;
+  width: calc(100% - 2rem);
+  margin: 0 auto 1rem auto;
+  box-sizing: border-box;
 }
 
 .rule-card:hover {
@@ -118,6 +121,13 @@ html, body {
   transform: scale(1.005);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rule-card.selected {
+  background-color: #9ECFFF;
+  border-color: #4A90E2;
+  transform: scale(1.01);
+  box-shadow: 0 0 12px rgba(74, 144, 226, 0.6);
 }
 
 .rule-row {

@@ -2,6 +2,8 @@ import type { FormattedFishingRule } from './fetch-fishing-regulations.ts';
 import { groupFormattedRulesBySpeciesAndLocation, removeGeneralRules, removeRulesWithText } from './helpers';
 import { updatePolygons } from './map-handler';
 
+const selectedCards = new Set<number>();
+
 /**Display fishing rules as cards and rule buttons */
 export function displayFormattedFishingRegulations(
   data: FormattedFishingRule[],
@@ -111,12 +113,39 @@ function attachRuleCardListeners(data: FormattedFishingRule[], map: L.Map) {
 
     const rule = data[ruleIndex];
 
+    // Add hover listeners (unchanged)
     card.addEventListener('mouseenter', () => {
-      updatePolygons(map, [rule], true); // Update the map to show only the hovered rule's geographies
+      updatePolygons(map, [rule], true); // Highlight hovered rule's geography
     });
 
     card.addEventListener('mouseleave', () => {
-      updatePolygons(map, data, true); // Reset the map to show all geographies
+      if (selectedCards.size === 0) {
+        updatePolygons(map, data, true); // Reset map to show all geographies
+      } else {
+        // Show only selected geographies
+        const selectedRules = Array.from(selectedCards).map((index) => data[index]);
+        updatePolygons(map, selectedRules, true);
+      }
+    });
+
+    card.addEventListener('click', () => {
+      if (selectedCards.has(ruleIndex)) {
+        // Deselect card
+        selectedCards.delete(ruleIndex);
+        card.classList.remove('selected');
+      } else {
+        // Select card
+        selectedCards.add(ruleIndex);
+        card.classList.add('selected');
+      }
+
+      // Update map based on selected cards
+      if (selectedCards.size === 0) {
+        updatePolygons(map, data, true); // Reset map to show all geographies
+      } else {
+        const selectedRules = Array.from(selectedCards).map((index) => data[index]);
+        updatePolygons(map, selectedRules, true);
+      }
     });
   });
 }
