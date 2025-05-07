@@ -1,10 +1,12 @@
 import type { FormattedFishingRule } from './fetch-fishing-regulations.ts';
-import { groupFormattedRulesBySpeciesAndLocation, removeGeneralRules } from './helpers';
+import { groupFormattedRulesBySpeciesAndLocation, removeGeneralRules, removeRulesWithText } from './helpers';
+import { updatePolygons } from './map-handler';
 
 /**Display fishing rules as cards and rule buttons */
 export function displayFormattedFishingRegulations(
   data: FormattedFishingRule[],
-  containerId: string
+  containerId: string,
+  map: L.Map
 ) {
   const container = document.querySelector<HTMLDivElement>(containerId);
   if (!container) {
@@ -12,65 +14,65 @@ export function displayFormattedFishingRegulations(
     return;
   }
 
-  // Remove "Allmän regel" rules
-  const filteredData = removeGeneralRules(data);
+  // Remove "Allmän regel" rules, and rules with "regel" in the text
+  const noGeneralRules = removeGeneralRules(data);
+  const filteredData = removeRulesWithText("regel", noGeneralRules);
 
   // Group the rules by species and location
   const grouped = groupFormattedRulesBySpeciesAndLocation(filteredData);
 
-
-
   container.innerHTML = [...grouped.entries()]
-      .map(([_, rules]) => {
-        const { species, location } = rules[0];
+    .map(([_, rules]) => {
+      const { species, location } = rules[0];
 
-        // Process species names with exceptions
-        const processedSpecies = species
-            .flatMap(s => s.split('/')) // Split names with slashes into separate species
-            .flatMap(s => s.split(',').map(name => name.trim())) // Split by commas and trim
+      // Process species names with exceptions
+      const processedSpecies = species
+        .flatMap(s => s.split('/')) // Split names with slashes into separate species
+        .flatMap(s => s.split(',').map(name => name.trim())) // Split by commas and trim
+        .map(s => {
+          const words = s.split(' ');
+          if (words.length > 1) {
+            words[1] = words[1].toLowerCase(); // Lowercase the second word
+          }
+          return words.join(' ');
+        });
+
+      const speciesLinks = processedSpecies.length > 0
+        ? processedSpecies
             .map(s => {
-              const words = s.split(' ');
-              if (words.length > 1) {
-                words[1] = words[1].toLowerCase(); // Lowercase the second word
+              const baseName = s.replace(/\s*\(.*?\)/g, ''); // Remove parenthesis for the link
+              const parenthesis = s.match(/\(.*?\)/)?.[0] || ''; // Extract parenthesis
+
+              if (baseName.toLowerCase() === 'övrigt') {
+                return `Övrigt`; // Display "Övrigt" as plain text
               }
-              return words.join(' ');
-            });
 
-        const speciesLinks = processedSpecies.length > 0
-            ? processedSpecies
-                .map(s => {
-                  const baseName = s.replace(/\s*\(.*?\)/g, ''); // Remove parenthesis for the link
-                  const parenthesis = s.match(/\(.*?\)/)?.[0] || ''; // Extract parenthesis
+              return `<a href="https://sv.wikipedia.org/wiki/${encodeURIComponent(baseName)}" target="_blank">${baseName}</a>${parenthesis ? ' ' + parenthesis : ''}`;
+            })
+            .join(', ')
+        : 'Ingen specificerad';
 
-                  if (baseName.toLowerCase() === 'övrigt') {
-                    return `Övrigt`; // Display "Övrigt" as plain text
-                  }
-
-                  return `<a href="https://sv.wikipedia.org/wiki/${encodeURIComponent(baseName)}" target="_blank">${baseName}</a> ${parenthesis}`;
-                })
-                .join(', ')
-            : 'Ingen specificerad';
-
-        const locationNames = location.length > 0
-            ? location.map(l => l.name).join(', ')
-            : 'Ingen specificerad';
-
-        return `
-      <div class="rule-card" location-ids="${location.map(l => l.id).join(',')}">
-        <div class="rule-row">
-          <div class="rule-column">
-            <div><strong>Art</strong><br></div>
-            <div>${speciesLinks}</div>
-          </div>
-          <div class="rule-column">
-            <div><strong>Plats</strong></div>
-            <div><p>${locationNames}</p></div>
-          </div>
-          <div class="small-rule-column"></div>
-          <div class="rule-column rule-buttons-wrap rule-text">
-            <strong>Fiskeregler</strong>
-            <div class="rule-buttons">
-              ${rules
+      const locationNames = location.length > 0
+        ? location.map(l => l.name).join(', ')
+        : 'Ingen specificerad';
+      return `
+  <div class="rule-card" 
+       location-ids="${location.map(l => l.id).join(',')}" 
+       data-rule-index="${data.indexOf(rules[0])}">
+    <div class="rule-row">
+      <div class="rule-column">
+        <div><strong>${speciesLinks.includes(',') ? 'Arter' : 'Art'}</strong><br></div>
+        <div>${speciesLinks}</div>
+      </div>
+      <div class="rule-column">
+        <div><strong>${locationNames.includes(',') ? 'Platser' : 'Plats'}</strong></div>
+        <div><p>${locationNames}</p></div>
+      </div>
+      <div class="small-rule-column"></div>
+      <div class="rule-column rule-buttons-wrap rule-text">
+        <strong>Fiskeregler</strong>
+        <div class="rule-buttons">
+          ${rules
             .map((rule, i) => `
                   <button
                     class="rule-btn"
@@ -81,20 +83,44 @@ export function displayFormattedFishingRegulations(
                   </button>
                 `)
             .join('')}
-            </div>
-          </div>
         </div>
       </div>
+    </div>
+  </div>
     `;
-      })
-      .join('');
+    })
+    .join('');
 
   attachRuleButtonListeners();
+  attachRuleCardListeners(data, map);
+
 /** Function to attach event listeners to rule buttons*/ 
 function attachRuleButtonListeners() {
   buttonClickListener();
   buttonColorSelector();
   setupModal(); // Initialize modal close listeners
+}
+
+function attachRuleCardListeners(data: FormattedFishingRule[], map: L.Map) {
+  const ruleCards = document.querySelectorAll('.rule-card');
+
+  ruleCards.forEach((card) => {
+    const ruleIndex = parseInt(card.getAttribute('data-rule-index') || '-1', 10);
+    if (ruleIndex === -1) {
+      console.error('Rule index not found for card.');
+      return;
+    }
+
+    const rule = data[ruleIndex];
+
+    card.addEventListener('mouseenter', () => {
+      updatePolygons(map, [rule], true); // Update the map to show only the hovered rule's geographies
+    });
+
+    card.addEventListener('mouseleave', () => {
+      updatePolygons(map, data, true); // Reset the map to show all geographies
+    });
+  });
 }
 
 /** Function to add event listeners to each button and log the rule text and type when clicked */
@@ -106,6 +132,8 @@ function buttonClickListener(){
   const modalRuleType = document.getElementById('modalRuleType');
   const modalRuleDescription = document.getElementById('modalRuleDescription');
   const modalTypeIndicator = document.querySelector('.modal-type-indicator');
+  const modalLocationList = document.getElementById("modalLocationList")
+  const modalLocationTitle = document.getElementById("modalLocationTitle");
 
   if (!modal || !modalOverlay || !modalTitle || !modalRuleType || !modalRuleDescription || !modalTypeIndicator) {
     console.error('Modal elements not found!');
@@ -116,6 +144,13 @@ function buttonClickListener(){
     btn.addEventListener('click', (e) => {
       const el = e.currentTarget as HTMLButtonElement;
 
+      // Find closest rule-card element
+      const ruleCardElement = el.closest('.rule-card');
+      if (!ruleCardElement) {
+        console.error('Rule card not found for the clicked button.');
+        return;
+      }
+
       const text = decodeURIComponent(el.dataset.ruleText || '');
       const type = el.dataset.ruleType || 'Okänd'; // Default to 'Okänd'
       const ruleNumberText = el.textContent?.trim() || 'Regel'; // Use button text for title
@@ -124,6 +159,16 @@ function buttonClickListener(){
       modalTitle.textContent = ruleNumberText;
       modalRuleType.textContent = type;
       modalRuleDescription.textContent = text;
+
+      const locationNames = ruleCardElement.querySelector('.rule-column p')?.textContent ?? 'Ingen specificerad';
+
+      if (modalLocationList) {
+        modalLocationList.textContent = locationNames;
+      }
+  
+      if (modalLocationTitle) {
+        modalLocationTitle.textContent = locationNames.includes(',') ? 'Platser:' : 'Plats:'; // Singular or plural based on the number of locations
+      }
 
       // Set indicator color
       modalTypeIndicator.className = 'modal-type-indicator'; // Reset classes
