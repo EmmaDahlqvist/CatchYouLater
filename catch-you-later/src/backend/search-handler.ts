@@ -24,7 +24,9 @@ export function setupSearchBar(
     // Update the displayed regulations
     displayFormattedFishingRegulations(prioritizedAndFilteredRegulations, containerId, map);
 
+    // Clear the selected cards
     selectedCards.clear();
+
     // Update the polygons on the map
     await updatePolygons(map, prioritizedAndFilteredRegulations, true);
   });

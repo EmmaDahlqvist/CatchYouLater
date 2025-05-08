@@ -147,6 +147,7 @@ function attachRuleCardListeners(data: FormattedFishingRule[], map: L.Map) {
       if (selectedCards.size === 0) {
         updatePolygons(map, data, true); // Reset map to show all geographies
       } else {
+        // Show only selected geographies
         const selectedRules = Array.from(selectedCards).map((index) => data[index]);
         updatePolygons(map, selectedRules, true);
       }
