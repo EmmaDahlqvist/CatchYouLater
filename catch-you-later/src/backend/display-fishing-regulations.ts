@@ -117,7 +117,9 @@ function attachRuleCardListeners(data: FormattedFishingRule[], map: L.Map) {
     // Add hover listeners
     card.addEventListener('mouseenter', () => {
       if (activeRuleIndex === null) {
-        updatePolygons(map, [rule], true);
+        const selectedRules = Array.from(selectedCards).map((index) => data[index]);
+        selectedRules.push(rule);
+        updatePolygons(map, selectedRules, true);
       }
     });
 
