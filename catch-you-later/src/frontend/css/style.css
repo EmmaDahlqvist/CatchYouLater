@@ -44,6 +44,12 @@ html, body {
   box-sizing: border-box;
 }
 
+
+.map-page .content-section {
+  display: block; 
+  height: auto; 
+}
+
 .search-bar {
   display: flex;
   align-items: center;
@@ -684,18 +690,30 @@ html, body {
 /* Styles for the main content area */
 
 /* Map Page Specific Styles */
-.map-page .content-section h1 {
-  width: 85%; /* Match map width */
-  text-align: left;
-  margin-left: auto; /* Center the h1 block */
-  margin-right: auto; /* Center the h1 block */
-  margin-bottom: 0.5rem; /* Space below title */
-  margin-top: 3rem; /* Increased top margin */
+.map-page .content-section .map-text-content {
+  width: 100%; /* Take full width within the flex container */
+  padding: 0 2rem; /* Apply desired horizontal padding */
+  box-sizing: border-box;
+  margin-bottom: 1rem; /* Space between text block and map */
+}
+
+.map-page .content-section .map-text-content > h1,
+.map-page .content-section .map-text-content > p {
+  margin: 0; /* Reset margins */
+  padding: 0; /* Reset padding */
+  text-align: left; /* Ensure left alignment */
+  margin-bottom: 0.5rem; /* Space between h1 and p */
 }
 
 #map-names {
-  height: 80vh; /* Or adjust as needed */
-  width: 85%; /* Decreased width */
+  height: 500px;
+  width: 85%;
+  border: 1px solid #ccc; /* Optional: adds a border */
+  margin-top: 1rem; /* Optional: adds some space above the map */
+  margin-left: auto; /* Center horizontally */
+  margin-right: auto; /* Center horizontally */
+}
+  width: 85%;
   border: 1px solid #ccc; /* Optional: adds a border */
   margin-top: 1rem; /* Optional: adds some space above the map */
   margin-left: auto; /* Center horizontally */
